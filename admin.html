@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<script>
+// Solo lectura: el editor del espacio de diseño no debe activarse en la web publicada.
+(function(){
+  function lock(){
+    document.body && document.body.removeAttribute('data-dc-editor-on');
+    document.querySelectorAll('[contenteditable="true"]').forEach(function(el){ el.setAttribute('contenteditable','false'); });
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    lock();
+    new MutationObserver(lock).observe(document.documentElement, {attributes:true, subtree:true, attributeFilter:['data-dc-editor-on','contenteditable']});
+  });
+})();
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js?v=1788275788115"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=Spectral:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#F1EFE8}a{color:#007E80}a:hover{color:#EF7A00}input:focus,textarea:focus,select:focus{outline:none;border-color:#00A0A0}</style>
+</helmet>
+<div style="min-height:100vh;font-family:'Spectral',serif;color:#3A4450">
+  <header style="background:#3A4450;padding:16px clamp(24px,5vw,60px);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
+    <div>
+      <span style="font:800 16px 'Archivo',sans-serif;color:#fff">Panel de actualización</span>
+      <span style="font:400 12px 'Archivo',sans-serif;color:rgba(255,255,255,.6);margin-left:10px">Biblioteca Normativa de Postgrado · FAHU</span>
+    </div>
+    <div style="display:flex;gap:14px;align-items:center">
+      <span style="font:600 11px 'Archivo',sans-serif;color:rgba(255,255,255,.8)">Sesión: coordinacion.postgrado — Administradora</span>
+      <a href="index.html" style="font:600 11px 'Archivo',sans-serif;color:#3A4450;background:#fff;border-radius:8px;padding:8px 14px;text-decoration:none;white-space:nowrap">Ver plataforma →</a>
+    </div>
+  </header>
+  <nav style="background:#fff;border-bottom:1px solid #E8E4DA;padding:0 clamp(24px,5vw,60px);display:flex;gap:4px">
+    <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3">
+      <button onClick="{{ t.pick }}" style="cursor:pointer;border:none;background:none;padding:14px 18px;font:600 13px 'Archivo',sans-serif;color:{{ t.fg }};border-bottom:3px solid {{ t.line }}">{{ t.name }}</button>
+    </sc-for>
+  </nav>
+  <main style="max-width:1080px;margin:0 auto;padding:34px clamp(20px,4vw,32px) 80px">
+    <sc-if value="{{ tabDocs }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:26px;align-items:start">
+        <section>
+          <h2 style="font:800 19px 'Archivo',sans-serif;margin:0 0 14px;color:#3A4450">Documentos cargados <span style="font:600 12px 'IBM Plex Mono',monospace;color:#8A8272">{{ nDocs }}</span></h2>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ docs }}" as="d" hint-placeholder-count="4">
+              <article style="background:#fff;border:1px solid #E8E4DA;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                  <span style="font:600 9.5px 'Archivo',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#007E80;background:#E4F2F2;border-radius:6px;padding:4px 8px">{{ d.tipo }}</span>
+                  <span style="font:600 10.5px 'IBM Plex Mono',monospace;color:#EF7A00">{{ d.anio }}</span>
+                  <span style="font:400 11px 'Archivo',sans-serif;color:#8A8272">{{ d.materia }} · {{ d.ambito }} · {{ d.nv }} versión(es)</span>
+                </div>
+                <div style="font:700 14px/1.3 'Archivo',sans-serif;color:#3A4450">{{ d.titulo }}</div>
+                <div style="display:flex;gap:14px">
+                  <button onClick="{{ d.edit }}" style="cursor:pointer;border:none;background:none;padding:0;font:600 12px 'Archivo',sans-serif;color:#007E80">Editar / nueva versión</button>
+                  <button onClick="{{ d.del }}" style="cursor:pointer;border:none;background:none;padding:0;font:600 12px 'Archivo',sans-serif;color:#B0483A">Eliminar</button>
+                </div>
+              </article>
+            </sc-for>
+          </div>
+        </section>
+        <section style="background:#fff;border:1px solid #E8E4DA;border-radius:14px;padding:22px 24px;position:sticky;top:20px">
+          <h3 style="font:800 15px 'Archivo',sans-serif;margin:0 0 4px;color:#3A4450">{{ formTitle }}</h3>
+          <p style="font:italic 400 12px/1.45 'Spectral',serif;color:#8A8272;margin:0 0 16px">{{ formHint }}</p>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <input value="{{ fTitulo }}" onChange="{{ setTitulo }}" placeholder="Título del documento" style="box-sizing:border-box;width:100%;padding:10px 14px;border:1.5px solid #E0DCD0;border-radius:9px;font:400 13px 'Archivo',sans-serif;background:#FAF9F5">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <select value="{{ fTipo }}" onChange="{{ setTipo }}" style="padding:10px 12px;border:1.5px solid #E0DCD0;border-radius:9px;font:400 13px 'Archivo',sans-serif;background:#FAF9F5;color:#3A4450">
+                <option>Reglamento</option><option>Resolución</option><option>Procedimiento</option><option>Lineamiento</option><option>Política</option><option>Ley</option><option>Convenio</option>
+              </select>
+              <select value="{{ fAmbito }}" onChange="{{ setAmbito }}" style="padding:10px 12px;border:1.5px solid #E0DCD0;border-radius:9px;font:400 13px 'Archivo',sans-serif;background:#FAF9F5;color:#3A4450">
+                <option>Nacional</option><option>Universidad</option><option>Facultad</option>
+              </select>
+            </div>
+            <select value="{{ fMateria }}" onChange="{{ setMateria }}" style="padding:10px 12px;border:1.5px solid #E0DCD0;border-radius:9px;font:400 13px 'Archivo',sans-serif;background:#FAF9F5;color:#3A4450">
+              <sc-for list="{{ materiasOpts }}" as="m" hint-placeholder-count="6">
+                <option>{{ m }}</option>
+              </sc-for>
+            </select>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <input value="{{ fRef }}" onChange="{{ setRef }}" placeholder="Referencia (ej. REX N°4159)" style="box-sizing:border-box;width:100%;padding:10px 14px;border:1.5px solid #E0DCD0;border-radius:9px;font:400 13px 'Archivo',sans-serif;background:#FAF9F5">
+              <input value="{{ fAnio }}" onChange="{{ setAnio }}" placeholder="Año (ej. 2026)" style="box-sizing:border-box;width:100%;padding:10px 14px;border:1.5px solid #E0DCD0;border-radius:9px;font:400 13px 'Archivo',sans-serif;background:#FAF9F5">
+            </div>
+            <textarea value="{{ fResumen }}" onChange="{{ setResumen }}" placeholder="Resumen breve (qué regula y a quién aplica)" rows="3" style="box-sizing:border-box;width:100%;padding:10px 14px;border:1.5px solid #E0DCD0;border-radius:9px;font:400 13px/1.5 'Spectral',serif;background:#FAF9F5;resize:vertical"></textarea>
+            <input value="{{ fNota }}" onChange="{{ setNota }}" placeholder="Nota de esta versión (ej. actualiza plazos)" style="box-sizing:border-box;width:100%;padding:10px 14px;border:1.5px solid #E0DCD0;border-radius:9px;font:400 13px 'Archivo',sans-serif;background:#FAF9F5">
+            <div style="border:1.5px dashed #C9C3B4;border-radius:9px;padding:14px;text-align:center;font:600 12px 'Archivo',sans-serif;color:#8A8272;background:#FAF9F5">Adjuntar PDF (arrastrar o hacer clic)</div>
+            <div style="display:flex;gap:10px">
+              <button onClick="{{ save }}" style="cursor:pointer;flex:1;border:none;background:#007E80;color:#fff;border-radius:9px;padding:12px;font:700 13px 'Archivo',sans-serif">{{ saveLabel }}</button>
+              <sc-if value="{{ editing }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ cancel }}" style="cursor:pointer;border:1.5px solid #E0DCD0;background:#fff;color:#8A8272;border-radius:9px;padding:12px 16px;font:600 13px 'Archivo',sans-serif">Cancelar</button>
+              </sc-if>
+            </div>
+          </div>
+        </section>
+      </div>
+    </sc-if>
+    <sc-if value="{{ tabUsers }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:26px">
+        <section>
+          <h2 style="font:800 19px 'Archivo',sans-serif;margin:0 0 14px;color:#3A4450">Usuarios del panel <span style="font:600 12px 'IBM Plex Mono',monospace;color:#8A8272">{{ nUsers }}</span></h2>
+          <div style="background:#fff;border:1px solid #E8E4DA;border-radius:14px;overflow:hidden">
+            <sc-for list="{{ users }}" as="u" hint-placeholder-count="3">
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) 110px 90px 80px;gap:14px;align-items:center;padding:14px 20px;border-bottom:1px solid #F0EDE4">
+                <div style="min-width:0">
+                  <div style="font:700 13.5px 'Archivo',sans-serif;color:#3A4450;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ u.nombre }}</div>
+                  <div style="font:400 11.5px 'IBM Plex Mono',monospace;color:#8A8272;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ u.correo }}</div>
+                </div>
+                <span style="font:600 10px 'Archivo',sans-serif;letter-spacing:.06em;text-transform:uppercase;text-align:center;border-radius:6px;padding:5px 8px;background:{{ u.rolBg }};color:{{ u.rolFg }}">{{ u.rol }}</span>
+                <button onClick="{{ u.toggle }}" style="cursor:pointer;border:none;border-radius:6px;padding:5px 8px;font:600 10.5px 'Archivo',sans-serif;background:{{ u.estBg }};color:{{ u.estFg }}">{{ u.estado }}</button>
+                <button onClick="{{ u.del }}" style="cursor:pointer;border:none;background:none;font:600 12px 'Archivo',sans-serif;color:#B0483A;text-align:right">Quitar</button>
+              </div>
+            </sc-for>
+          </div>
+          <p style="font:italic 400 12px/1.5 'Spectral',serif;color:#8A8272;margin-top:12px">Roles: la persona <strong>administradora</strong> gestiona usuarios y publica; la <strong>editora</strong> carga y actualiza documentos.</p>
+        </section>
+        <section style="background:#fff;border:1px solid #E8E4DA;border-radius:14px;padding:22px 24px;max-width:420px">
+          <h3 style="font:800 15px 'Archivo',sans-serif;margin:0 0 16px;color:#3A4450">Crear usuario</h3>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <input value="{{ uNombre }}" onChange="{{ setUNombre }}" placeholder="Nombre y apellido" style="box-sizing:border-box;width:100%;padding:10px 14px;border:1.5px solid #E0DCD0;border-radius:9px;font:400 13px 'Archivo',sans-serif;background:#FAF9F5">
+            <input value="{{ uCorreo }}" onChange="{{ setUCorreo }}" placeholder="correo@usach.cl" style="box-sizing:border-box;width:100%;padding:10px 14px;border:1.5px solid #E0DCD0;border-radius:9px;font:400 13px 'Archivo',sans-serif;background:#FAF9F5">
+            <select value="{{ uRol }}" onChange="{{ setURol }}" style="padding:10px 12px;border:1.5px solid #E0DCD0;border-radius:9px;font:400 13px 'Archivo',sans-serif;background:#FAF9F5;color:#3A4450">
+              <option>Editora</option><option>Administradora</option>
+            </select>
+            <button onClick="{{ addUser }}" style="cursor:pointer;border:none;background:#007E80;color:#fff;border-radius:9px;padding:12px;font:700 13px 'Archivo',sans-serif">Crear usuario</button>
+          </div>
+        </section>
+      </div>
+    </sc-if>
+    <sc-if value="{{ tabPub }}" hint-placeholder-val="{{ false }}">
+      <section style="max-width:680px">
+        <h2 style="font:800 19px 'Archivo',sans-serif;margin:0 0 10px;color:#3A4450">Publicar cambios</h2>
+        <p style="font:400 14px/1.65 'Spectral',serif;color:#5A6470;margin:0 0 20px">La plataforma pública es un sitio estático (GitHub Pages): no tiene servidor, por lo que publicar consiste en actualizar el archivo de datos del repositorio. Este panel genera ese archivo con todo lo cargado.</p>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:22px">
+          <div style="display:flex;gap:14px;align-items:baseline;background:#fff;border:1px solid #E8E4DA;border-radius:12px;padding:16px 20px"><span style="font:800 15px 'IBM Plex Mono',monospace;color:#EF7A00">1</span><span style="font:400 13.5px/1.55 'Spectral',serif;color:#5A6470">Descarga el archivo <span style="font:600 12px 'IBM Plex Mono',monospace;color:#007E80">normativa.json</span> con el botón de abajo: contiene el catálogo completo tal como quedó en este panel.</span></div>
+          <div style="display:flex;gap:14px;align-items:baseline;background:#fff;border:1px solid #E8E4DA;border-radius:12px;padding:16px 20px"><span style="font:800 15px 'IBM Plex Mono',monospace;color:#EF7A00">2</span><span style="font:400 13.5px/1.55 'Spectral',serif;color:#5A6470">Súbelo al repositorio junto con los PDF nuevos (carpeta <span style="font:600 12px 'IBM Plex Mono',monospace;color:#007E80">docs/</span>).</span></div>
+          <div style="display:flex;gap:14px;align-items:baseline;background:#fff;border:1px solid #E8E4DA;border-radius:12px;padding:16px 20px"><span style="font:800 15px 'IBM Plex Mono',monospace;color:#EF7A00">3</span><span style="font:400 13.5px/1.55 'Spectral',serif;color:#5A6470">GitHub Pages actualiza la plataforma pública en 1–2 minutos.</span></div>
+        </div>
+        <button onClick="{{ download }}" style="cursor:pointer;border:none;background:#EF7A00;color:#fff;border-radius:10px;padding:14px 24px;font:700 14px 'Archivo',sans-serif">Descargar normativa.json ↓</button>
+        <p style="font:italic 400 12px/1.5 'Spectral',serif;color:#8A8272;margin-top:16px">Los cambios hechos en este panel se guardan localmente en tu navegador hasta que los publiques.</p>
+      </section>
+    </sc-if>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  KEY = "np-admin-v2";
+  state = {
+    tab: "docs",
+    docs: [],
+    users: [
+      {id:1, nombre:"Coordinación de Postgrado", correo:"coordinacion.postgrado@usach.cl", rol:"Administradora", activo:true},
+      {id:2, nombre:"Secretaría VIP", correo:"secretaria.vip@usach.cl", rol:"Editora", activo:true}
+    ],
+    editing: null,
+    form: {titulo:"", tipo:"Reglamento", ambito:"Universidad", anio:"", materia:"Reglamentos generales", ref:"", resumen:"", nota:""},
+    uform: {nombre:"", correo:"", rol:"Editora"}
+  };
+  async componentDidMount() {
+    let base = [];
+    try { base = (await import('./data/normativa/catalogo.js?v=1788275788115')).DOCS; }
+    catch(e) { console.warn('No se pudo cargar el catálogo normativo', e); }
+    let docs = base, users = this.state.users;
+    try {
+      const s = JSON.parse(localStorage.getItem(this.KEY));
+      // solo se aceptan datos guardados con el esquema vigente (materia + ref)
+      const valido = s && Array.isArray(s.docs) && s.docs.length &&
+        s.docs.every(d => d && typeof d.materia === "string" && typeof d.ref === "string");
+      if (valido) docs = s.docs;
+      if (s && Array.isArray(s.users) && s.users.length) users = s.users;
+    } catch(e) {}
+    this.setState({docs, users});
+  }
+  persist() { setTimeout(() => localStorage.setItem(this.KEY, JSON.stringify({docs: this.state.docs, users: this.state.users})), 0); }
+  setF(k) { return e => this.setState(s => ({form: {...s.form, [k]: e.target.value}})); }
+  setU(k) { return e => this.setState(s => ({uform: {...s.uform, [k]: e.target.value}})); }
+  renderVals() {
+    const st = this.state;
+    const year = new Date().getFullYear().toString();
+    return {
+      tabs: [["docs","Documentos"],["users","Usuarios"],["pub","Publicación"]].map(([id,name]) => ({
+        name, fg: st.tab===id ? "#007E80" : "#8A8272", line: st.tab===id ? "#EF7A00" : "transparent",
+        pick: () => this.setState({tab: id})
+      })),
+      tabDocs: st.tab==="docs", tabUsers: st.tab==="users", tabPub: st.tab==="pub",
+      nDocs: st.docs.length, nUsers: st.users.length,
+      materiasOpts: [...new Set([...st.docs.map(d => d.materia).filter(Boolean), "Reglamentos generales"])].sort(),
+      docs: st.docs.map(d => ({...d, nv: (d.versiones||[]).length,
+        edit: () => this.setState({editing: d.id, form: {titulo:d.titulo, tipo:d.tipo, ambito:d.ambito, anio:d.anio, materia:d.materia||"", ref:d.ref||"", resumen:d.resumen, nota:""}}),
+        del: () => { this.setState(s => ({docs: s.docs.filter(x => x.id!==d.id), editing: s.editing===d.id?null:s.editing})); this.persist(); }
+      })),
+      formTitle: st.editing ? "Editar documento" : "Cargar documento",
+      formHint: st.editing ? "Al guardar se registra una nueva versión; la anterior queda en el historial." : "El documento quedará visible en la plataforma tras publicar.",
+      saveLabel: st.editing ? "Guardar nueva versión" : "Agregar documento",
+      editing: !!st.editing,
+      fTitulo: st.form.titulo, fTipo: st.form.tipo, fAmbito: st.form.ambito, fAnio: st.form.anio, fMateria: st.form.materia, fRef: st.form.ref, fResumen: st.form.resumen, fNota: st.form.nota,
+      setTitulo: this.setF("titulo"), setTipo: this.setF("tipo"), setAmbito: this.setF("ambito"), setAnio: this.setF("anio"), setMateria: this.setF("materia"), setRef: this.setF("ref"), setResumen: this.setF("resumen"), setNota: this.setF("nota"),
+      cancel: () => this.setState({editing: null, form: {titulo:"", tipo:"Reglamento", ambito:"Universidad", anio:"", materia:"Reglamentos generales", ref:"", resumen:"", nota:""}}),
+      save: () => {
+        const f = st.form;
+        if (!f.titulo.trim()) return;
+        const vacio = {titulo:"", tipo:"Reglamento", ambito:"Universidad", anio:"", materia:"Reglamentos generales", ref:"", resumen:"", nota:""};
+        if (st.editing) {
+          this.setState(s => ({editing: null,
+            docs: s.docs.map(d => d.id!==s.editing ? d : {...d, ...f, versiones: [{v:"vigente", fecha:f.anio||year, nota:f.nota||"Actualización."}, ...(d.versiones||[]).map(v => ({...v, v: v.v.replace("vigente","anterior")}))]}),
+            form: vacio}));
+        } else {
+          this.setState(s => ({docs: [{id:Date.now(), titulo:f.titulo, tipo:f.tipo, ambito:f.ambito, anio:f.anio||year, materia:f.materia, ref:f.ref, resumen:f.resumen, secciones:[], arts:0, pdf:"", versiones:[{v:"vigente", fecha:f.anio||year, nota:f.nota||"Versión original."}]}, ...s.docs],
+            form: vacio}));
+        }
+        this.persist();
+      },
+      users: st.users.map(u => ({...u,
+        estado: u.activo ? "Activo" : "Suspendido",
+        estBg: u.activo ? "#E4F2E8" : "#F5E3E0", estFg: u.activo ? "#2F6B4F" : "#B0483A",
+        rolBg: u.rol==="Administradora" ? "#3A4450" : "#E4F2F2", rolFg: u.rol==="Administradora" ? "#fff" : "#007E80",
+        toggle: () => { this.setState(s => ({users: s.users.map(x => x.id===u.id ? {...x, activo: !x.activo} : x)})); this.persist(); },
+        del: () => { this.setState(s => ({users: s.users.filter(x => x.id!==u.id)})); this.persist(); }
+      })),
+      uNombre: st.uform.nombre, uCorreo: st.uform.correo, uRol: st.uform.rol,
+      setUNombre: this.setU("nombre"), setUCorreo: this.setU("correo"), setURol: this.setU("rol"),
+      addUser: () => {
+        const f = st.uform;
+        if (!f.nombre.trim() || !f.correo.trim()) return;
+        this.setState(s => ({users: [...s.users, {id:Date.now(), nombre:f.nombre, correo:f.correo, rol:f.rol, activo:true}], uform: {nombre:"", correo:"", rol:"Editora"}}));
+        this.persist();
+      },
+      download: () => {
+        const blob = new Blob([JSON.stringify({actualizado: new Date().toISOString(), documentos: this.state.docs}, null, 2)], {type:"application/json"});
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob); a.download = "normativa.json"; a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>
