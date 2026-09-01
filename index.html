@@ -18,7 +18,7 @@
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js?v=1788277742878"></script>
+<script src="./support.js?v=1788278150251"></script>
 </head>
 <body>
 <x-dc>
@@ -30,7 +30,7 @@
 <div style="min-height:100vh;font-family:'Spectral',serif;color:#3A4450">
   <header style="background:#fff;border-bottom:1px solid #E8E4DA;padding:16px clamp(24px,5vw,60px);display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap">
     <div>
-      <img src="assets/logo-fahu.png?v=1788277742878" alt="Facultad de Humanidades · Universidad de Santiago de Chile" style="display:block;height:87px;width:auto;margin-bottom:8px">
+      <img src="assets/logo-fahu.png?v=1788278150251" alt="Facultad de Humanidades · Universidad de Santiago de Chile" style="display:block;height:87px;width:auto;margin-bottom:8px">
       <span style="font:800 16px 'Archivo',sans-serif;color:#007E80">Repositorio Normativa Postgrados FAHU e IDEA</span>
       <span style="font:400 12px 'Archivo',sans-serif;color:#8A8272;margin-left:10px">Vicedecanato de Investigación y Postgrado · FAHU USACH</span>
     </div>
@@ -156,6 +156,13 @@
           </div>
         </sc-for>
       </div>
+      <sc-if value="{{ hayPaginas }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:16px">
+          <button onClick="{{ anterior }}" style="border:none;background:none;padding:0;font:600 12.5px 'Archivo',sans-serif;{{ antEstilo }}">← Anteriores</button>
+          <span style="font:600 11.5px 'IBM Plex Mono',monospace;color:#8A8272">{{ pagTexto }} · {{ rango }}</span>
+          <button onClick="{{ siguiente }}" style="border:none;background:none;padding:0;font:600 12.5px 'Archivo',sans-serif;{{ sigEstilo }}">Siguientes →</button>
+        </div>
+      </sc-if>
       <p style="font:italic 400 12px/1.5 'Spectral',serif;color:#8A8272;margin-top:16px">Los documentos digitalizados sin capa de texto (indicados en su ficha) se encuentran disponibles para descarga, pero su contenido no participa de la búsqueda. Nuevos documentos se incorporan desde el panel de actualización.</p>
     </main>
   </div>
@@ -184,7 +191,7 @@ class Component extends DCLogic {
   matrizFilas = [];
   async componentDidMount() {
     try {
-      const m = await import('./data/normativa/catalogo.js?v=1788277742878');
+      const m = await import('./data/normativa/catalogo.js?v=1788278150251');
       this.docs = m.DOCS; this.matrizFilas = m.MATRIZ;
       // La plataforma muestra siempre el catálogo publicado; los borradores viven en el panel.
       this.forceUpdate();
@@ -210,7 +217,8 @@ class Component extends DCLogic {
   renderVals() {
     const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
     const q = norm(this.state.q);
-    const docs = this.docs
+    const PORPAG = 10;
+    const todos = this.docs
       .filter(d => (this.state.tipo==="Todos"||d.tipo===this.state.tipo) &&
                    (this.state.ambito==="Todos"||d.ambito===this.state.ambito) &&
                    (this.state.materia==="Todas"||d.materia===this.state.materia) &&
@@ -219,6 +227,13 @@ class Component extends DCLogic {
       .map(d => ({...d, open: this.state.sel===d.id, arrow: this.state.sel===d.id ? "Cerrar ✕" : "Ver ficha →",
                   verPdf: () => this.setState({pdf: {url: d.pdf, titulo: d.titulo, ref: d.ref}}),
                   toggle: () => this.setState(s => ({sel: s.sel===d.id ? null : d.id}))}));
+    const sig = [this.state.q, this.state.tipo, this.state.ambito, this.state.materia, this.state.nivel].join("|");
+    if (this._sig !== undefined && this._sig !== sig) this.state.pag = 1;
+    this._sig = sig;
+    const paginas = Math.max(1, Math.ceil(todos.length / PORPAG));
+    const pag = Math.min(this.state.pag || 1, paginas);
+    const docs = todos.slice((pag-1)*PORPAG, pag*PORPAG);
+    const irA = p => this.setState({pag: p, sel: null});
     const materias = [...new Set(this.docs.map(d => d.materia))];
     const kpis = [
       {n: String(this.docs.length), lab: "documentos en la biblioteca"},
@@ -259,14 +274,22 @@ class Component extends DCLogic {
     }));
     return {
       q: this.state.q, setQ: e => this.setState({q: e.target.value}),
-      docs, count: docs.length, total: this.docs.length, kpis, matriz, barras, cols,
+      docs, count: todos.length, total: this.docs.length, kpis, matriz, barras, cols,
+      hayPaginas: paginas > 1,
+      rango: ((pag-1)*PORPAG + 1) + "–" + Math.min(pag*PORPAG, todos.length) + " de " + todos.length,
+      pagTexto: "Página " + pag + " de " + paginas,
+      antHab: pag > 1, sigHab: pag < paginas,
+      antEstilo: pag > 1 ? "color:#007E80;cursor:pointer" : "color:#C4BFB2;cursor:default",
+      sigEstilo: pag < paginas ? "color:#007E80;cursor:pointer" : "color:#C4BFB2;cursor:default",
+      anterior: () => { if (pag > 1) irA(pag-1); },
+      siguiente: () => { if (pag < paginas) irA(pag+1); },
+      vacio: todos.length===0,
       pdfAbierto: !!this.state.pdf,
       pdfUrl: this.state.pdf ? this.state.pdf.url : "",
       pdfTitulo: this.state.pdf ? this.state.pdf.titulo : "",
       pdfRef: this.state.pdf ? this.state.pdf.ref : "",
       pdfArchivo: this.state.pdf ? this.state.pdf.url.split("/").pop() : "",
       cerrarPdf: () => this.setState({pdf: null}),
-      vacio: docs.length===0,
       filtrado: this.state.materia!=="Todas" || this.state.tipo!=="Todos" || this.state.ambito!=="Todos" || this.state.nivel!=="Todos" || !!this.state.q,
       noFiltrado: this.state.materia==="Todas" && this.state.tipo==="Todos" && this.state.ambito==="Todos" && this.state.nivel==="Todos" && !this.state.q,
       limpiar: () => this.setState({q:"", tipo:"Todos", ambito:"Todos", materia:"Todas", nivel:"Todos", sel:null}),
