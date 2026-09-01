@@ -18,19 +18,40 @@
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js?v=1788278150251"></script>
+<script src="./support.js?v=1788280102539"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=Spectral:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-<style>body{margin:0;background:#F6F4EF}a{color:#007E80}a:hover{color:#EF7A00}input:focus{outline:none;border-color:#00A0A0}</style>
+<style>
+body{margin:0;background:#F6F4EF}a{color:#007E80}a:hover{color:#EF7A00}input:focus{outline:none;border-color:#00A0A0}
+@media screen and (max-width:760px){
+  /* header: buscador y botón a ancho completo */
+  header [style*="display: flex"][style*="gap: 14px"]{flex-wrap:wrap !important;width:100%}
+  header input{width:100% !important}
+  /* rail de facetas sobre el listado, sin columna lateral */
+  [style*="250px minmax"]{grid-template-columns:minmax(0,1fr) !important}
+  aside[style*="border-right"]{border-right:none !important;border-bottom:1px solid #E8E4DA !important;padding:22px 20px 26px !important}
+  /* KPIs y barras del panorama a una columna doble/simple */
+  [style*="repeat(4,"]{grid-template-columns:repeat(2, minmax(0,1fr)) !important}
+  [style*="repeat(2,"]{grid-template-columns:minmax(0,1fr) !important}
+  [style*="150px minmax"]{grid-template-columns:minmax(0,1fr) 34px !important}
+  [style*="150px minmax"] > span:first-child{white-space:normal !important;grid-column:1 / -1}
+  /* matriz comparada: columnas de marcas más angostas */
+  [style*="56px 56px"]{grid-template-columns:minmax(0,1fr) 30px 30px 30px !important;gap:3px 5px !important}
+  /* filas de documentos: tipo, título y acción apilados */
+  [style*="96px minmax"]{grid-template-columns:minmax(0,1fr) !important;gap:7px !important;padding:14px 18px !important}
+  [style*="96px minmax"] > span{justify-self:start;text-align:left !important}
+  [style*="20px 136px"]{padding:4px 18px 20px 18px !important}
+}
+</style>
 </helmet>
 <div style="min-height:100vh;font-family:'Spectral',serif;color:#3A4450">
   <header style="background:#fff;border-bottom:1px solid #E8E4DA;padding:16px clamp(24px,5vw,60px);display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap">
     <div>
-      <img src="assets/logo-fahu.png?v=1788278150251" alt="Facultad de Humanidades · Universidad de Santiago de Chile" style="display:block;height:87px;width:auto;margin-bottom:8px">
+      <img src="assets/logo-fahu.png?v=1788280102539" alt="Facultad de Humanidades · Universidad de Santiago de Chile" style="display:block;height:87px;width:auto;margin-bottom:8px">
       <span style="font:800 16px 'Archivo',sans-serif;color:#007E80">Repositorio Normativa Postgrados FAHU e IDEA</span>
       <span style="font:400 12px 'Archivo',sans-serif;color:#8A8272;margin-left:10px">Vicedecanato de Investigación y Postgrado · FAHU USACH</span>
     </div>
@@ -191,7 +212,7 @@ class Component extends DCLogic {
   matrizFilas = [];
   async componentDidMount() {
     try {
-      const m = await import('./data/normativa/catalogo.js?v=1788278150251');
+      const m = await import('./data/normativa/catalogo.js?v=1788280102539');
       this.docs = m.DOCS; this.matrizFilas = m.MATRIZ;
       // La plataforma muestra siempre el catálogo publicado; los borradores viven en el panel.
       this.forceUpdate();
