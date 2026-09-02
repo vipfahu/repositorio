@@ -18,7 +18,7 @@
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js?v=1788383151207"></script>
+<script src="./support.js?v=1788384106032"></script>
 </head>
 <body>
 <x-dc>
@@ -51,7 +51,7 @@ body{margin:0;background:#F6F4EF}a{color:#007E80}a:hover{color:#EF7A00}input:foc
 <div style="min-height:100vh;font-family:'Spectral',serif;color:#3A4450">
   <header style="background:#fff;border-bottom:1px solid #E8E4DA;padding:16px clamp(24px,5vw,60px);display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap">
     <div onClick="{{ inicio }}" title="Volver al inicio de la plataforma" style="cursor:pointer">
-      <img src="assets/logo-fahu.png?v=1788383151207" alt="Facultad de Humanidades · Universidad de Santiago de Chile" style="display:block;height:87px;width:auto;margin-bottom:8px">
+      <img src="assets/logo-fahu.png?v=1788384106032" alt="Facultad de Humanidades · Universidad de Santiago de Chile" style="display:block;height:87px;width:auto;margin-bottom:8px">
       <span style="font:800 16px 'Archivo',sans-serif;color:#007E80">Repositorio Normativa Postgrados FAHU e IDEA</span>
       <span style="font:400 12px 'Archivo',sans-serif;color:#8A8272;margin-left:10px">Vicedecanato de Investigación y Postgrado · FAHU USACH</span>
     </div>
@@ -146,7 +146,10 @@ body{margin:0;background:#F6F4EF}a{color:#007E80}a:hover{color:#EF7A00}input:foc
         <sc-for list="{{ docs }}" as="d" hint-placeholder-count="6">
           <div style="border-bottom:1px solid #F0EDE4">
             <div onClick="{{ d.toggle }}" style="cursor:pointer;display:grid;grid-template-columns:96px minmax(0,1fr) 90px;gap:18px;align-items:center;padding:16px 22px" style-hover="background:#FAF9F4">
-              <span style="font:600 10px 'Archivo',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#007E80;background:#E4F2F2;border-radius:6px;padding:5px 8px;text-align:center">{{ d.tipo }}</span>
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <span style="font:600 10px 'Archivo',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#007E80;background:#E4F2F2;border-radius:6px;padding:5px 8px;text-align:center">{{ d.tipo }}</span>
+                <span style="font:600 9.5px 'Archivo',sans-serif;letter-spacing:.05em;text-transform:uppercase;border-radius:6px;padding:4px 6px;text-align:center;background:{{ d.vigBg }};color:{{ d.vigFg }}">{{ d.vigEstado }}</span>
+              </div>
               <div>
                 <div style="font:700 14.5px/1.3 'Archivo',sans-serif;color:#3A4450">{{ d.titulo }}</div>
                 <div style="font:400 12px 'Archivo',sans-serif;color:#8A8272;margin-top:3px">{{ d.ref }} · {{ d.materia }}</div>
@@ -223,7 +226,7 @@ class Component extends DCLogic {
   matrizFilas = [];
   async componentDidMount() {
     try {
-      const m = await import('./data/normativa/catalogo.js?v=1788383151207');
+      const m = await import('./data/normativa/catalogo.js?v=1788384106032');
       this.docs = m.DOCS; this.matrizFilas = m.MATRIZ;
       this.forceUpdate();
     } catch (e) { console.warn('No se pudo cargar el catálogo normativo', e); }
@@ -244,7 +247,7 @@ class Component extends DCLogic {
       if (!this._sb) {
         const [lib, cfg] = await Promise.all([
           import('https://esm.sh/@supabase/supabase-js@2'),
-          import('./data/supabase/config.js?v=1788383151207')
+          import('./data/supabase/config.js?v=1788384106032')
         ]);
         this._sb = lib.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
       }
@@ -269,6 +272,8 @@ class Component extends DCLogic {
     document.removeEventListener('visibilitychange', this._vis);
     window.removeEventListener('focus', this._vis);
   }
+
+  VIGCOL = {"Vigente":["#E7F3EB","#2F6B4F"], "Vencida":["#FBF0DF","#8A5A12"], "Derogada":["#F5E3E0","#B0483A"], "Sin definir":["#F1EFE8","#8A8272"]};
 
   CORTO = {
     "Doctorado en Artes y Humanidades":"D. Artes y Humanidades",
@@ -317,6 +322,9 @@ class Component extends DCLogic {
       .map(d => ({...d, open: this.state.sel===d.id, arrow: this.state.sel===d.id ? "Cerrar ✕" : "Ver ficha →",
                   verPdf: () => this.setState({pdf: {url: d.pdf, titulo: d.titulo, ref: d.ref}}),
                   conSecciones: (d.secciones||[]).length > 0,
+                  vigEstado: d.vigencia || "Vigente",
+                  vigBg: (this.VIGCOL[d.vigencia] || this.VIGCOL["Vigente"])[0],
+                  vigFg: (this.VIGCOL[d.vigencia] || this.VIGCOL["Vigente"])[1],
                   vigAviso: d.vigencia && d.vigencia !== "Vigente",
                   vigTexto: d.vigencia === "Vencida" ? ("Vigencia vencida" + (d.vigencia_hasta ? ` el ${d.vigencia_hasta}` : ""))
                           : d.vigencia === "Derogada" ? "Documento derogado"
