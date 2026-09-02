@@ -18,7 +18,7 @@
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js?v=1788384106032"></script>
+<script src="./support.js?v=1788391515898"></script>
 </head>
 <body>
 <x-dc>
@@ -51,7 +51,7 @@ body{margin:0;background:#F6F4EF}a{color:#007E80}a:hover{color:#EF7A00}input:foc
 <div style="min-height:100vh;font-family:'Spectral',serif;color:#3A4450">
   <header style="background:#fff;border-bottom:1px solid #E8E4DA;padding:16px clamp(24px,5vw,60px);display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap">
     <div onClick="{{ inicio }}" title="Volver al inicio de la plataforma" style="cursor:pointer">
-      <img src="assets/logo-fahu.png?v=1788384106032" alt="Facultad de Humanidades · Universidad de Santiago de Chile" style="display:block;height:87px;width:auto;margin-bottom:8px">
+      <img src="assets/logo-fahu.png?v=1788391515898" alt="Facultad de Humanidades · Universidad de Santiago de Chile" style="display:block;height:87px;width:auto;margin-bottom:8px">
       <span style="font:800 16px 'Archivo',sans-serif;color:#007E80">Repositorio Normativa Postgrados FAHU e IDEA</span>
       <span style="font:400 12px 'Archivo',sans-serif;color:#8A8272;margin-left:10px">Vicedecanato de Investigación y Postgrado · FAHU USACH</span>
     </div>
@@ -81,8 +81,14 @@ body{margin:0;background:#F6F4EF}a{color:#007E80}a:hover{color:#EF7A00}input:foc
         </sc-for>
       </div>
       <div style="font:700 10px 'Archivo',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#8A8272;margin-bottom:10px">Tipo de documento</div>
-      <div style="display:flex;flex-direction:column;gap:2px">
+      <div style="display:flex;flex-direction:column;gap:2px;margin-bottom:26px">
         <sc-for list="{{ tipos }}" as="t" hint-placeholder-count="5">
+          <button onClick="{{ t.pick }}" style="cursor:{{ t.cursor }};display:flex;justify-content:space-between;align-items:center;gap:8px;border:none;text-align:left;border-radius:8px;padding:8px 12px;font:600 12.5px 'Archivo',sans-serif;background:{{ t.bg }};color:{{ t.fg }}"><span>{{ t.name }}</span><span style="font:600 11px 'IBM Plex Mono',monospace;opacity:.65">{{ t.n }}</span></button>
+        </sc-for>
+      </div>
+      <div style="font:700 10px 'Archivo',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#8A8272;margin-bottom:10px">Vigencia</div>
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <sc-for list="{{ vigencias }}" as="t" hint-placeholder-count="5">
           <button onClick="{{ t.pick }}" style="cursor:{{ t.cursor }};display:flex;justify-content:space-between;align-items:center;gap:8px;border:none;text-align:left;border-radius:8px;padding:8px 12px;font:600 12.5px 'Archivo',sans-serif;background:{{ t.bg }};color:{{ t.fg }}"><span>{{ t.name }}</span><span style="font:600 11px 'IBM Plex Mono',monospace;opacity:.65">{{ t.n }}</span></button>
         </sc-for>
       </div>
@@ -163,7 +169,7 @@ body{margin:0;background:#F6F4EF}a{color:#007E80}a:hover{color:#EF7A00}input:foc
                 </sc-if>
                 <p style="font:400 13.5px/1.6 'Spectral',serif;color:#5A6470;margin:0;max-width:640px">{{ d.resumen }}</p>
                 <div style="display:flex;gap:10px;flex-wrap:wrap">
-                  <button onClick="{{ d.verPdf }}" style="cursor:pointer;border:none;font:600 12px 'Archivo',sans-serif;color:#fff;background:#007E80;border-radius:8px;padding:9px 14px">Ver PDF vigente</button>
+                  <button onClick="{{ d.verPdf }}" style="cursor:pointer;border:none;font:600 12px 'Archivo',sans-serif;color:#fff;background:#007E80;border-radius:8px;padding:9px 14px">Ver PDF {{ d.vigVerbo }}</button>
                   <a href="{{ d.pdf }}" target="_blank" rel="noopener" style="font:600 12px 'Archivo',sans-serif;color:#007E80;background:#E4F2F2;border-radius:8px;padding:9px 14px;text-decoration:none">Descargar ↓</a>
                 </div>
                 <sc-if value="{{ d.conSecciones }}" hint-placeholder-val="{{ true }}">
@@ -221,12 +227,12 @@ body{margin:0;background:#F6F4EF}a{color:#007E80}a:hover{color:#EF7A00}input:foc
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  state = { q: "", tipo: "Todos", ambito: "Todos", materia: "Todas", nivel: "Todos", programa: "Todos", sel: null };
+  state = { q: "", tipo: "Todos", ambito: "Todos", materia: "Todas", nivel: "Todos", programa: "Todos", vigencia: "Todas", sel: null };
   docs = [];
   matrizFilas = [];
   async componentDidMount() {
     try {
-      const m = await import('./data/normativa/catalogo.js?v=1788384106032');
+      const m = await import('./data/normativa/catalogo.js?v=1788391515898');
       this.docs = m.DOCS; this.matrizFilas = m.MATRIZ;
       this.forceUpdate();
     } catch (e) { console.warn('No se pudo cargar el catálogo normativo', e); }
@@ -247,7 +253,7 @@ class Component extends DCLogic {
       if (!this._sb) {
         const [lib, cfg] = await Promise.all([
           import('https://esm.sh/@supabase/supabase-js@2'),
-          import('./data/supabase/config.js?v=1788384106032')
+          import('./data/supabase/config.js?v=1788391515898')
         ]);
         this._sb = lib.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
       }
@@ -294,7 +300,9 @@ class Component extends DCLogic {
   };
   facet(key, values) {
     return values.map(v => {
-      const n = (v==="Todos"||v==="Todas") ? this.docs.length : this.docs.filter(d => d[key]===v).length;
+      const n = (v==="Todos"||v==="Todas") ? this.docs.length
+              : key==="vigencia" ? this.docs.filter(d => (d.vigencia||"Vigente")===v).length
+              : this.docs.filter(d => d[key]===v).length;
       // los programas se abrevian en la barra lateral
       const etiqueta = key === "programa" ? (this.CORTO[v] || v) : v;
       const on = this.state[key]===v, vacio = n===0;
@@ -318,11 +326,13 @@ class Component extends DCLogic {
                    (this.state.materia==="Todas"||d.materia===this.state.materia) &&
                    (this.state.nivel==="Todos"||d.nivel===this.state.nivel) &&
                    (this.state.programa==="Todos"||d.programa===this.state.programa) &&
+                   (this.state.vigencia==="Todas"||(d.vigencia||"Vigente")===this.state.vigencia) &&
                    (!q || norm(d.titulo+" "+d.resumen+" "+d.ambito+" "+d.tipo+" "+d.materia+" "+d.ref+" "+(d.programa||"")+" "+(d.secciones||[]).join(" ")).includes(q)))
       .map(d => ({...d, open: this.state.sel===d.id, arrow: this.state.sel===d.id ? "Cerrar ✕" : "Ver ficha →",
                   verPdf: () => this.setState({pdf: {url: d.pdf, titulo: d.titulo, ref: d.ref}}),
                   conSecciones: (d.secciones||[]).length > 0,
                   vigEstado: d.vigencia || "Vigente",
+                  vigVerbo: {"Vencida":"con vigencia vencida", "Derogada":"derogado", "Sin definir":"sin vigencia determinada"}[d.vigencia] || "vigente",
                   vigBg: (this.VIGCOL[d.vigencia] || this.VIGCOL["Vigente"])[0],
                   vigFg: (this.VIGCOL[d.vigencia] || this.VIGCOL["Vigente"])[1],
                   vigAviso: d.vigencia && d.vigencia !== "Vigente",
@@ -330,7 +340,7 @@ class Component extends DCLogic {
                           : d.vigencia === "Derogada" ? "Documento derogado"
                           : "Vigencia sin determinar",
                   toggle: () => this.setState(s => ({sel: s.sel===d.id ? null : d.id}))}));
-    const sig = [this.state.q, this.state.tipo, this.state.ambito, this.state.materia, this.state.nivel, this.state.programa].join("|");
+    const sig = [this.state.q, this.state.tipo, this.state.ambito, this.state.materia, this.state.nivel, this.state.programa, this.state.vigencia].join("|");
     if (this._sig !== undefined && this._sig !== sig) this.state.pag = 1;
     this._sig = sig;
     const paginas = Math.max(1, Math.ceil(todos.length / PORPAG));
@@ -381,7 +391,7 @@ class Component extends DCLogic {
     return {
       q: this.state.q, setQ: e => this.setState({q: e.target.value}),
       inicio: () => {
-        this.setState({q:"", tipo:"Todos", ambito:"Todos", materia:"Todas", nivel:"Todos", programa:"Todos", sel:null, pag:1, pdf:null});
+        this.setState({q:"", tipo:"Todos", ambito:"Todos", materia:"Todas", nivel:"Todos", programa:"Todos", vigencia:"Todas", sel:null, pag:1, pdf:null});
         this.sincronizar();
         window.scrollTo({top: 0, behavior: "smooth"});
       },
@@ -401,13 +411,14 @@ class Component extends DCLogic {
       pdfRef: this.state.pdf ? this.state.pdf.ref : "",
       pdfArchivo: this.state.pdf ? this.state.pdf.url.split("/").pop() : "",
       cerrarPdf: () => this.setState({pdf: null}),
-      filtrado: this.state.materia!=="Todas" || this.state.tipo!=="Todos" || this.state.ambito!=="Todos" || this.state.nivel!=="Todos" || this.state.programa!=="Todos" || !!this.state.q,
-      noFiltrado: this.state.materia==="Todas" && this.state.tipo==="Todos" && this.state.ambito==="Todos" && this.state.nivel==="Todos" && this.state.programa==="Todos" && !this.state.q,
-      limpiar: () => this.setState({q:"", tipo:"Todos", ambito:"Todos", materia:"Todas", nivel:"Todos", programa:"Todos", sel:null}),
+      filtrado: this.state.materia!=="Todas" || this.state.tipo!=="Todos" || this.state.ambito!=="Todos" || this.state.nivel!=="Todos" || this.state.programa!=="Todos" || this.state.vigencia!=="Todas" || !!this.state.q,
+      noFiltrado: this.state.materia==="Todas" && this.state.tipo==="Todos" && this.state.ambito==="Todos" && this.state.nivel==="Todos" && this.state.programa==="Todos" && this.state.vigencia==="Todas" && !this.state.q,
+      limpiar: () => this.setState({q:"", tipo:"Todos", ambito:"Todos", materia:"Todas", nivel:"Todos", programa:"Todos", vigencia:"Todas", sel:null}),
       tipos: this.facet("tipo", ["Todos","Reglamento","Resolución","Procedimiento","Lineamiento","Política","Ley","Convenio"]),
       ambitos: this.facet("ambito", ["Todos","Nacional","Universidad","Facultad"]),
       materias: this.facet("materia", ["Todas", ...materias]),
       programas: this.facet("programa", ["Todos", ...[...new Set(this.docs.map(d => d.programa).filter(Boolean))].sort()]),
+      vigencias: this.facet("vigencia", ["Todas", "Vigente", "Vencida", "Derogada", "Sin definir"]),
       programaSel: this.state.programa,
       setPrograma: e => this.setState({programa: e.target.value, sel: null})
     };
