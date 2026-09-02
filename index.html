@@ -18,13 +18,13 @@
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js?v=1788280102539"></script>
+<script src="./support.js?v=1788313481643"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=Spectral:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&amp;family=Spectral:ital,wght@0,400;0,600;1,400&amp;family=IBM+Plex+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0;background:#F6F4EF}a{color:#007E80}a:hover{color:#EF7A00}input:focus{outline:none;border-color:#00A0A0}
 @media screen and (max-width:760px){
@@ -51,7 +51,7 @@ body{margin:0;background:#F6F4EF}a{color:#007E80}a:hover{color:#EF7A00}input:foc
 <div style="min-height:100vh;font-family:'Spectral',serif;color:#3A4450">
   <header style="background:#fff;border-bottom:1px solid #E8E4DA;padding:16px clamp(24px,5vw,60px);display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap">
     <div>
-      <img src="assets/logo-fahu.png?v=1788280102539" alt="Facultad de Humanidades · Universidad de Santiago de Chile" style="display:block;height:87px;width:auto;margin-bottom:8px">
+      <img src="assets/logo-fahu.png?v=1788313481643" alt="Facultad de Humanidades · Universidad de Santiago de Chile" style="display:block;height:87px;width:auto;margin-bottom:8px">
       <span style="font:800 16px 'Archivo',sans-serif;color:#007E80">Repositorio Normativa Postgrados FAHU e IDEA</span>
       <span style="font:400 12px 'Archivo',sans-serif;color:#8A8272;margin-left:10px">Vicedecanato de Investigación y Postgrado · FAHU USACH</span>
     </div>
@@ -68,6 +68,12 @@ body{margin:0;background:#F6F4EF}a{color:#007E80}a:hover{color:#EF7A00}input:foc
           <button onClick="{{ t.pick }}" style="cursor:{{ t.cursor }};display:flex;justify-content:space-between;align-items:center;gap:8px;border:none;text-align:left;border-radius:8px;padding:8px 12px;font:600 12.5px 'Archivo',sans-serif;background:{{ t.bg }};color:{{ t.fg }}"><span>{{ t.name }}</span><span style="font:600 11px 'IBM Plex Mono',monospace;opacity:.65">{{ t.n }}</span></button>
         </sc-for>
       </div>
+      <div style="font:700 10px 'Archivo',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#8A8272;margin-bottom:10px">CUERPOS ACADÉMICOS<br></div>
+      <select value="{{ programaSel }}" onChange="{{ setPrograma }}" style="width:100%;box-sizing:border-box;margin-bottom:26px;padding:9px 10px;border:1.5px solid #E0DCD0;border-radius:9px;font:600 12.5px 'Archivo',sans-serif;background:#FAF9F5;color:#3A4450;cursor:pointer">
+        <sc-for list="{{ programas }}" as="t" hint-placeholder-count="8">
+          <option value="{{ t.valor }}">{{ t.opcion }}</option>
+        </sc-for>
+      </select>
       <div style="font:700 10px 'Archivo',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#8A8272;margin-bottom:10px">Ámbito</div>
       <div style="display:flex;flex-direction:column;gap:2px;margin-bottom:26px">
         <sc-for list="{{ ambitos }}" as="t" hint-placeholder-count="4">
@@ -154,14 +160,16 @@ body{margin:0;background:#F6F4EF}a{color:#007E80}a:hover{color:#EF7A00}input:foc
                   <button onClick="{{ d.verPdf }}" style="cursor:pointer;border:none;font:600 12px 'Archivo',sans-serif;color:#fff;background:#007E80;border-radius:8px;padding:9px 14px">Ver PDF vigente</button>
                   <a href="{{ d.pdf }}" target="_blank" rel="noopener" style="font:600 12px 'Archivo',sans-serif;color:#007E80;background:#E4F2F2;border-radius:8px;padding:9px 14px;text-decoration:none">Descargar ↓</a>
                 </div>
-                <div>
-                  <div style="font:700 10px 'Archivo',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#8A8272;margin-bottom:8px">Contenido del reglamento</div>
-                  <div style="display:flex;flex-wrap:wrap;gap:6px">
-                    <sc-for list="{{ d.secciones }}" as="s" hint-placeholder-count="6">
-                      <span style="font:600 11px 'Archivo',sans-serif;color:#3A4450;background:#F1EFE8;border:1px solid #E5E1D4;border-radius:6px;padding:5px 10px">{{ s }}</span>
-                    </sc-for>
+                <sc-if value="{{ d.conSecciones }}" hint-placeholder-val="{{ true }}">
+                  <div>
+                    <div style="font:700 10px 'Archivo',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#8A8272;margin-bottom:8px">Contenido del reglamento</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px">
+                      <sc-for list="{{ d.secciones }}" as="s" hint-placeholder-count="6">
+                        <span style="font:600 11px 'Archivo',sans-serif;color:#3A4450;background:#F1EFE8;border:1px solid #E5E1D4;border-radius:6px;padding:5px 10px">{{ s }}</span>
+                      </sc-for>
+                    </div>
                   </div>
-                </div>
+                </sc-if>
                 <div>
                   <div style="font:700 10px 'Archivo',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#8A8272;margin-bottom:6px">Historial de versiones</div>
                   <sc-for list="{{ d.versiones }}" as="v" hint-placeholder-count="2">
@@ -207,12 +215,12 @@ body{margin:0;background:#F6F4EF}a{color:#007E80}a:hover{color:#EF7A00}input:foc
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  state = { q: "", tipo: "Todos", ambito: "Todos", materia: "Todas", nivel: "Todos", sel: null };
+  state = { q: "", tipo: "Todos", ambito: "Todos", materia: "Todas", nivel: "Todos", programa: "Todos", sel: null };
   docs = [];
   matrizFilas = [];
   async componentDidMount() {
     try {
-      const m = await import('./data/normativa/catalogo.js?v=1788280102539');
+      const m = await import('./data/normativa/catalogo.js?v=1788313481643');
       this.docs = m.DOCS; this.matrizFilas = m.MATRIZ;
       // La plataforma muestra siempre el catálogo publicado; los borradores viven en el panel.
       this.forceUpdate();
@@ -222,12 +230,32 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { window.removeEventListener('keydown', this._esc); }
 
+  CORTO = {
+    "Doctorado en Artes y Humanidades":"D. Artes y Humanidades",
+    "Doctorado en Estudios Americanos":"D. Estudios Americanos",
+    "Doctorado en Historia":"D. Historia",
+    "Magíster en Arte, Pensamiento y Cultura Latinoamericanos":"M. Arte, Pensamiento y Cultura",
+    "Magíster en Ciencias de la Comunicación":"M. Ciencias de la Comunicación",
+    "Magíster en Ciencias Sociales, mención Estudios de la Sociedad Civil":"M. Cs. Sociales · Sociedad Civil",
+    "Magíster en Educación, mención Currículum y Evaluación":"M. Ed. · Currículum y Evaluación",
+    "Magíster en Educación, mención Gestión y Liderazgo Educacional":"M. Ed. · Gestión y Liderazgo",
+    "Magíster en Estudios Internacionales":"M. Estudios Internacionales",
+    "Magíster en Estudios Políticos Aplicados":"M. Estudios Políticos Aplicados",
+    "Magíster en Filosofía de las Ciencias":"M. Filosofía de las Ciencias",
+    "Magíster en Historia":"M. Historia",
+    "Magíster en Lingüística":"M. Lingüística",
+    "Magíster en Literatura Latinoamericana y Chilena":"M. Literatura Latinoam. y Chilena",
+    "Magíster en Psicología Educacional":"M. Psicología Educacional"
+  };
   facet(key, values) {
     return values.map(v => {
       const n = (v==="Todos"||v==="Todas") ? this.docs.length : this.docs.filter(d => d[key]===v).length;
+      // los programas se abrevian en la barra lateral
+      const etiqueta = key === "programa" ? (this.CORTO[v] || v) : v;
       const on = this.state[key]===v, vacio = n===0;
       return {
-        name: v, n,
+        name: etiqueta, n, valor: v,
+        opcion: v === "Todos" || v === "Todas" ? `${etiqueta} (${n})` : `${etiqueta} · ${n}`,
         bg: on ? "#007E80" : "transparent",
         fg: on ? "#fff" : (vacio ? "#B7B1A2" : "#3A4450"),
         cursor: vacio ? "default" : "pointer",
@@ -244,11 +272,13 @@ class Component extends DCLogic {
                    (this.state.ambito==="Todos"||d.ambito===this.state.ambito) &&
                    (this.state.materia==="Todas"||d.materia===this.state.materia) &&
                    (this.state.nivel==="Todos"||d.nivel===this.state.nivel) &&
-                   (!q || norm(d.titulo+" "+d.resumen+" "+d.ambito+" "+d.tipo+" "+d.materia+" "+d.ref+" "+(d.secciones||[]).join(" ")).includes(q)))
+                   (this.state.programa==="Todos"||d.programa===this.state.programa) &&
+                   (!q || norm(d.titulo+" "+d.resumen+" "+d.ambito+" "+d.tipo+" "+d.materia+" "+d.ref+" "+(d.programa||"")+" "+(d.secciones||[]).join(" ")).includes(q)))
       .map(d => ({...d, open: this.state.sel===d.id, arrow: this.state.sel===d.id ? "Cerrar ✕" : "Ver ficha →",
                   verPdf: () => this.setState({pdf: {url: d.pdf, titulo: d.titulo, ref: d.ref}}),
+                  conSecciones: (d.secciones||[]).length > 0,
                   toggle: () => this.setState(s => ({sel: s.sel===d.id ? null : d.id}))}));
-    const sig = [this.state.q, this.state.tipo, this.state.ambito, this.state.materia, this.state.nivel].join("|");
+    const sig = [this.state.q, this.state.tipo, this.state.ambito, this.state.materia, this.state.nivel, this.state.programa].join("|");
     if (this._sig !== undefined && this._sig !== sig) this.state.pag = 1;
     this._sig = sig;
     const paginas = Math.max(1, Math.ceil(todos.length / PORPAG));
@@ -260,7 +290,7 @@ class Component extends DCLogic {
       {n: String(this.docs.length), lab: "documentos en la biblioteca"},
       {n: String(materias.length), lab: "materias normativas"},
       {n: String(this.docs.reduce((a,d)=>a+(d.arts||0),0)), lab: "artículos indexados"},
-      {n: "2017–2025", lab: "período cubierto"}
+      {n: "2017–2026", lab: "período cubierto"}
     ];
     const matCount = materias.map(m => ({name:m, n:this.docs.filter(d=>d.materia===m).length}))
       .sort((a,b) => b.n-a.n);
@@ -311,12 +341,15 @@ class Component extends DCLogic {
       pdfRef: this.state.pdf ? this.state.pdf.ref : "",
       pdfArchivo: this.state.pdf ? this.state.pdf.url.split("/").pop() : "",
       cerrarPdf: () => this.setState({pdf: null}),
-      filtrado: this.state.materia!=="Todas" || this.state.tipo!=="Todos" || this.state.ambito!=="Todos" || this.state.nivel!=="Todos" || !!this.state.q,
-      noFiltrado: this.state.materia==="Todas" && this.state.tipo==="Todos" && this.state.ambito==="Todos" && this.state.nivel==="Todos" && !this.state.q,
-      limpiar: () => this.setState({q:"", tipo:"Todos", ambito:"Todos", materia:"Todas", nivel:"Todos", sel:null}),
+      filtrado: this.state.materia!=="Todas" || this.state.tipo!=="Todos" || this.state.ambito!=="Todos" || this.state.nivel!=="Todos" || this.state.programa!=="Todos" || !!this.state.q,
+      noFiltrado: this.state.materia==="Todas" && this.state.tipo==="Todos" && this.state.ambito==="Todos" && this.state.nivel==="Todos" && this.state.programa==="Todos" && !this.state.q,
+      limpiar: () => this.setState({q:"", tipo:"Todos", ambito:"Todos", materia:"Todas", nivel:"Todos", programa:"Todos", sel:null}),
       tipos: this.facet("tipo", ["Todos","Reglamento","Resolución","Procedimiento","Lineamiento","Política","Ley","Convenio"]),
       ambitos: this.facet("ambito", ["Todos","Nacional","Universidad","Facultad"]),
-      materias: this.facet("materia", ["Todas", ...materias])
+      materias: this.facet("materia", ["Todas", ...materias]),
+      programas: this.facet("programa", ["Todos", ...[...new Set(this.docs.map(d => d.programa).filter(Boolean))].sort()]),
+      programaSel: this.state.programa,
+      setPrograma: e => this.setState({programa: e.target.value, sel: null})
     };
   }
 }
