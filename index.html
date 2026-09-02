@@ -18,7 +18,7 @@
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js?v=1788381266480"></script>
+<script src="./support.js?v=1788383151207"></script>
 </head>
 <body>
 <x-dc>
@@ -50,8 +50,8 @@ body{margin:0;background:#F6F4EF}a{color:#007E80}a:hover{color:#EF7A00}input:foc
 </helmet>
 <div style="min-height:100vh;font-family:'Spectral',serif;color:#3A4450">
   <header style="background:#fff;border-bottom:1px solid #E8E4DA;padding:16px clamp(24px,5vw,60px);display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap">
-    <div>
-      <img src="assets/logo-fahu.png?v=1788381266480" alt="Facultad de Humanidades · Universidad de Santiago de Chile" style="display:block;height:87px;width:auto;margin-bottom:8px">
+    <div onClick="{{ inicio }}" title="Volver al inicio de la plataforma" style="cursor:pointer">
+      <img src="assets/logo-fahu.png?v=1788383151207" alt="Facultad de Humanidades · Universidad de Santiago de Chile" style="display:block;height:87px;width:auto;margin-bottom:8px">
       <span style="font:800 16px 'Archivo',sans-serif;color:#007E80">Repositorio Normativa Postgrados FAHU e IDEA</span>
       <span style="font:400 12px 'Archivo',sans-serif;color:#8A8272;margin-left:10px">Vicedecanato de Investigación y Postgrado · FAHU USACH</span>
     </div>
@@ -68,7 +68,7 @@ body{margin:0;background:#F6F4EF}a{color:#007E80}a:hover{color:#EF7A00}input:foc
           <button onClick="{{ t.pick }}" style="cursor:{{ t.cursor }};display:flex;justify-content:space-between;align-items:center;gap:8px;border:none;text-align:left;border-radius:8px;padding:8px 12px;font:600 12.5px 'Archivo',sans-serif;background:{{ t.bg }};color:{{ t.fg }}"><span>{{ t.name }}</span><span style="font:600 11px 'IBM Plex Mono',monospace;opacity:.65">{{ t.n }}</span></button>
         </sc-for>
       </div>
-      <div style="font:700 10px 'Archivo',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#8A8272;margin-bottom:10px">CUERPOS ACADÉMICOS<br></div>
+      <div style="font:700 10px 'Archivo',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#8A8272;margin-bottom:10px">PROGRAMAS<br></div>
       <select value="{{ programaSel }}" onChange="{{ setPrograma }}" style="width:100%;box-sizing:border-box;margin-bottom:26px;padding:9px 10px;border:1.5px solid #E0DCD0;border-radius:9px;font:600 12.5px 'Archivo',sans-serif;background:#FAF9F5;color:#3A4450;cursor:pointer">
         <sc-for list="{{ programas }}" as="t" hint-placeholder-count="8">
           <option value="{{ t.valor }}">{{ t.opcion }}</option>
@@ -155,6 +155,9 @@ body{margin:0;background:#F6F4EF}a{color:#007E80}a:hover{color:#EF7A00}input:foc
             </div>
             <sc-if value="{{ d.open }}" hint-placeholder-val="{{ false }}">
               <div style="padding:4px 22px 20px 136px;display:flex;flex-direction:column;gap:12px">
+                <sc-if value="{{ d.vigAviso }}" hint-placeholder-val="{{ false }}">
+                  <div style="font:600 11.5px 'Archivo',sans-serif;color:#8A5A12;background:#FBF0DF;border-radius:8px;padding:8px 12px;align-self:flex-start">{{ d.vigTexto }}</div>
+                </sc-if>
                 <p style="font:400 13.5px/1.6 'Spectral',serif;color:#5A6470;margin:0;max-width:640px">{{ d.resumen }}</p>
                 <div style="display:flex;gap:10px;flex-wrap:wrap">
                   <button onClick="{{ d.verPdf }}" style="cursor:pointer;border:none;font:600 12px 'Archivo',sans-serif;color:#fff;background:#007E80;border-radius:8px;padding:9px 14px">Ver PDF vigente</button>
@@ -220,18 +223,32 @@ class Component extends DCLogic {
   matrizFilas = [];
   async componentDidMount() {
     try {
-      const m = await import('./data/normativa/catalogo.js?v=1788381266480');
+      const m = await import('./data/normativa/catalogo.js?v=1788383151207');
       this.docs = m.DOCS; this.matrizFilas = m.MATRIZ;
       this.forceUpdate();
     } catch (e) { console.warn('No se pudo cargar el catálogo normativo', e); }
-    // Si el servicio de datos ya tiene documentos cargados desde el panel, prevalecen
-    // sobre el catálogo estático (que queda como respaldo si el servicio no responde).
+    await this.sincronizar();
+    // Las cifras del panorama se recalculan cuando la persona vuelve a la pestaña:
+    // así un documento cargado desde el panel aparece sin recargar la página.
+    this._vis = () => { if (!document.hidden) this.sincronizar(); };
+    document.addEventListener('visibilitychange', this._vis);
+    window.addEventListener('focus', this._vis);
+    this._esc = e => { if (e.key === "Escape" && this.state.pdf) this.setState({pdf: null}); };
+    window.addEventListener('keydown', this._esc);
+  }
+
+  // Si el servicio de datos tiene documentos cargados desde el panel, prevalecen
+  // sobre el catálogo estático (que queda como respaldo si el servicio no responde).
+  async sincronizar() {
     try {
-      const [lib, cfg] = await Promise.all([
-        import('https://esm.sh/@supabase/supabase-js@2'),
-        import('./data/supabase/config.js?v=1788381266480')
-      ]);
-      const sb = lib.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+      if (!this._sb) {
+        const [lib, cfg] = await Promise.all([
+          import('https://esm.sh/@supabase/supabase-js@2'),
+          import('./data/supabase/config.js?v=1788383151207')
+        ]);
+        this._sb = lib.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+      }
+      const sb = this._sb;
       const { data, error } = await sb.from('documentos').select('*').order('anio', { ascending: false }).order('titulo');
       if (!error && data && data.length) {
         this.docs = data.map(d => ({
@@ -240,15 +257,18 @@ class Component extends DCLogic {
           resumen: d.resumen, arts: d.arts || 0,
           secciones: Array.isArray(d.secciones) ? d.secciones : [],
           versiones: Array.isArray(d.versiones) ? d.versiones : [],
-          pdf: d.pdf || ''
+          pdf: d.pdf || '',
+          vigencia: d.vigencia || 'Vigente', vigencia_hasta: d.vigencia_hasta || ''
         }));
         this.forceUpdate();
       }
     } catch (e) { console.info('Catálogo servido desde el archivo estático.'); }
-    this._esc = e => { if (e.key === "Escape" && this.state.pdf) this.setState({pdf: null}); };
-    window.addEventListener('keydown', this._esc);
   }
-  componentWillUnmount() { window.removeEventListener('keydown', this._esc); }
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this._esc);
+    document.removeEventListener('visibilitychange', this._vis);
+    window.removeEventListener('focus', this._vis);
+  }
 
   CORTO = {
     "Doctorado en Artes y Humanidades":"D. Artes y Humanidades",
@@ -297,6 +317,10 @@ class Component extends DCLogic {
       .map(d => ({...d, open: this.state.sel===d.id, arrow: this.state.sel===d.id ? "Cerrar ✕" : "Ver ficha →",
                   verPdf: () => this.setState({pdf: {url: d.pdf, titulo: d.titulo, ref: d.ref}}),
                   conSecciones: (d.secciones||[]).length > 0,
+                  vigAviso: d.vigencia && d.vigencia !== "Vigente",
+                  vigTexto: d.vigencia === "Vencida" ? ("Vigencia vencida" + (d.vigencia_hasta ? ` el ${d.vigencia_hasta}` : ""))
+                          : d.vigencia === "Derogada" ? "Documento derogado"
+                          : "Vigencia sin determinar",
                   toggle: () => this.setState(s => ({sel: s.sel===d.id ? null : d.id}))}));
     const sig = [this.state.q, this.state.tipo, this.state.ambito, this.state.materia, this.state.nivel, this.state.programa].join("|");
     if (this._sig !== undefined && this._sig !== sig) this.state.pag = 1;
@@ -310,7 +334,10 @@ class Component extends DCLogic {
       {n: String(this.docs.length), lab: "documentos en la biblioteca"},
       {n: String(materias.length), lab: "materias normativas"},
       {n: String(this.docs.reduce((a,d)=>a+(d.arts||0),0)), lab: "artículos indexados"},
-      {n: "2017–2026", lab: "período cubierto"}
+      {n: (() => {
+        const años = this.docs.map(d => parseInt(String(d.anio).slice(0,4), 10)).filter(n => n >= 1900);
+        return años.length ? `${Math.min(...años)}–${Math.max(...años)}` : "—";
+      })(), lab: "período cubierto"}
     ];
     const matCount = materias.map(m => ({name:m, n:this.docs.filter(d=>d.materia===m).length}))
       .sort((a,b) => b.n-a.n);
@@ -345,6 +372,11 @@ class Component extends DCLogic {
     }));
     return {
       q: this.state.q, setQ: e => this.setState({q: e.target.value}),
+      inicio: () => {
+        this.setState({q:"", tipo:"Todos", ambito:"Todos", materia:"Todas", nivel:"Todos", programa:"Todos", sel:null, pag:1, pdf:null});
+        this.sincronizar();
+        window.scrollTo({top: 0, behavior: "smooth"});
+      },
       docs, count: todos.length, total: this.docs.length, kpis, matriz, barras, cols,
       hayPaginas: paginas > 1,
       rango: ((pag-1)*PORPAG + 1) + "–" + Math.min(pag*PORPAG, todos.length) + " de " + todos.length,

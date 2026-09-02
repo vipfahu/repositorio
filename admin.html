@@ -18,7 +18,7 @@
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js?v=1788381266480"></script>
+<script src="./support.js?v=1788383151207"></script>
 </head>
 <body>
 <x-dc>
@@ -33,7 +33,7 @@
     <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px">
       <div style="width:100%;max-width:420px">
         <div style="text-align:center;margin-bottom:22px">
-          <img src="assets/logo-fahu.png?v=1788381266480" alt="Facultad de Humanidades USACH" style="height:104px;width:auto;display:block;margin:0 auto 14px">
+          <img src="assets/logo-fahu.png?v=1788383151207" alt="Facultad de Humanidades USACH" style="height:104px;width:auto;display:block;margin:0 auto 14px">
           <div style="font:800 17px 'Archivo',sans-serif;color:#007E80">Panel de actualización</div>
           <div style="font:400 12.5px 'Archivo',sans-serif;color:#8A8272;margin-top:4px">Biblioteca Normativa de Postgrado · FAHU e IDEA</div>
         </div>
@@ -69,13 +69,13 @@
 
   <sc-if value="{{ vistaPanel }}" hint-placeholder-val="{{ false }}">
     <header style="background:#3A4450;padding:14px clamp(20px,5vw,60px);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
-      <div style="display:flex;align-items:center;gap:14px">
-        <img src="assets/logo-fahu.png?v=1788381266480" alt="" style="height:52px;width:auto;display:block;filter:brightness(0) invert(1)">
+      <a href="index.html" title="Volver al inicio de la plataforma" style="display:flex;align-items:center;gap:14px;text-decoration:none">
+        <img src="assets/logo-fahu.png?v=1788383151207" alt="" style="height:52px;width:auto;display:block;filter:brightness(0) invert(1)">
         <div>
           <div style="font:800 15px 'Archivo',sans-serif;color:#fff">Panel de actualización</div>
           <div style="font:400 11.5px 'Archivo',sans-serif;color:rgba(255,255,255,.6)">Biblioteca Normativa de Postgrado</div>
         </div>
-      </div>
+      </a>
       <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
         <span style="font:600 11px 'Archivo',sans-serif;color:rgba(255,255,255,.85)">{{ sesionEtiqueta }}</span>
         <a href="index.html" style="font:600 11px 'Archivo',sans-serif;color:#3A4450;background:#fff;border-radius:8px;padding:8px 13px;text-decoration:none;white-space:nowrap">Ver plataforma →</a>
@@ -116,6 +116,7 @@
                     <sc-if value="{{ d.conPdf }}" hint-placeholder-val="{{ true }}">
                       <span style="font:600 9.5px 'Archivo',sans-serif;letter-spacing:.05em;text-transform:uppercase;color:#2F6B4F;background:#E7F3EB;border-radius:6px;padding:4px 8px">PDF</span>
                     </sc-if>
+                    <span style="font:600 9.5px 'Archivo',sans-serif;letter-spacing:.05em;text-transform:uppercase;border-radius:6px;padding:4px 8px;background:{{ d.vigBg }};color:{{ d.vigFg }}">{{ d.vigLabel }}</span>
                   </div>
                   <div style="font:700 14px/1.3 'Archivo',sans-serif;color:#3A4450">{{ d.titulo }}</div>
                   <div style="display:flex;gap:14px;flex-wrap:wrap">
@@ -153,6 +154,13 @@
                 <input value="{{ fRef }}" onChange="{{ setRef }}" placeholder="Referencia (ej. REX N°4159)" style="box-sizing:border-box;width:100%;padding:10px 14px;border:1.5px solid #E0DCD0;border-radius:9px;font:400 13px 'Archivo',sans-serif;background:#FAF9F5">
                 <input value="{{ fAnio }}" onChange="{{ setAnio }}" placeholder="Año (ej. 2026)" style="box-sizing:border-box;width:100%;padding:10px 14px;border:1.5px solid #E0DCD0;border-radius:9px;font:400 13px 'Archivo',sans-serif;background:#FAF9F5">
               </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <select value="{{ fVigencia }}" onChange="{{ setVigencia }}" style="padding:10px 12px;border:1.5px solid #E0DCD0;border-radius:9px;font:400 13px 'Archivo',sans-serif;background:#FAF9F5;color:#3A4450">
+                  <option>Vigente</option><option>Vencida</option><option>Derogada</option><option>Sin definir</option>
+                </select>
+                <input value="{{ fVigHasta }}" onChange="{{ setVigHasta }}" placeholder="Vigente hasta (ej. 17.01.2027)" style="box-sizing:border-box;width:100%;padding:10px 14px;border:1.5px solid #E0DCD0;border-radius:9px;font:400 13px 'Archivo',sans-serif;background:#FAF9F5">
+              </div>
+              <p style="font:italic 400 11.5px/1.45 'Spectral',serif;color:#8A8272;margin:-4px 0 0">Las resoluciones de designación de cuerpos académicos rigen dos años desde su promulgación. Deja la fecha en blanco si el documento no tiene término.</p>
               <textarea value="{{ fResumen }}" onChange="{{ setResumen }}" placeholder="Resumen breve (qué regula y a quién aplica)" rows="3" style="box-sizing:border-box;width:100%;padding:10px 14px;border:1.5px solid #E0DCD0;border-radius:9px;font:400 13px/1.5 'Spectral',serif;background:#FAF9F5;resize:vertical"></textarea>
               <input value="{{ fNota }}" onChange="{{ setNota }}" placeholder="Nota de esta versión (ej. actualiza plazos)" style="box-sizing:border-box;width:100%;padding:10px 14px;border:1.5px solid #E0DCD0;border-radius:9px;font:400 13px 'Archivo',sans-serif;background:#FAF9F5">
               <label style="border:1.5px dashed #C9C3B4;border-radius:9px;padding:14px;text-align:center;font:600 12px/1.5 'Archivo',sans-serif;color:#8A8272;background:#FAF9F5;cursor:pointer;display:block">
@@ -283,7 +291,8 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  VACIO = {titulo:"", tipo:"Reglamento", ambito:"Universidad", anio:"", materia:"Reglamentos generales", programa:"", ref:"", resumen:"", nota:""};
+  VACIO = {titulo:"", tipo:"Reglamento", ambito:"Universidad", anio:"", materia:"Reglamentos generales", programa:"", ref:"", resumen:"", nota:"", vigencia:"Vigente", vigHasta:""};
+  VIGCOL = {"Vigente":["#E7F3EB","#2F6B4F"], "Vencida":["#FBF0DF","#8A5A12"], "Derogada":["#F5E3E0","#B0483A"], "Sin definir":["#F1EFE8","#8A8272"]};
   state = {
     fase: "cargando", modo: "login", perfil: null, tab: "docs",
     docs: [], perfiles: [], invitaciones: [], actividad: [],
@@ -298,7 +307,7 @@ class Component extends DCLogic {
     try {
       const [lib, cfg] = await Promise.all([
         import("https://esm.sh/@supabase/supabase-js@2"),
-        import("./data/supabase/config.js?v=1788381266480")
+        import("./data/supabase/config.js?v=1788383151207")
       ]);
       this.bucket = cfg.BUCKET || "normativa";
       this.sb = lib.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
@@ -377,6 +386,7 @@ class Component extends DCLogic {
     if (/password/i.test(t) && /short|least/i.test(t)) return "La contraseña es demasiado corta.";
     if (/rate limit|too many/i.test(t)) return "Demasiados intentos. Espera unos minutos.";
     if (/signups? (are )?not allowed|signup is disabled/i.test(t)) return "El registro está desactivado en el servicio de datos. Una persona administradora debe activarlo en Supabase: Authentication → Sign In / Providers → Email → «Allow new users to sign up».";
+    if (/could not find the '?[a-z_]+'? column|column .* does not exist|PGRST204/i.test(t)) return "Falta actualizar la base de datos: vuelve a ejecutar data/supabase/setup.sql (o data/supabase/migracion-vigencia.sql) en Supabase.";
     if (/could not find the table|schema cache|relation .* does not exist/i.test(t)) return "La base de datos aún no está instalada: ejecuta data/supabase/setup.sql en Supabase.";
     if (/database error|unexpected_failure/i.test(t)) return "El servicio de datos rechazó la operación. Si es la primera vez, ejecuta data/supabase/setup.sql en Supabase.";
     return t;
@@ -398,24 +408,25 @@ class Component extends DCLogic {
       const limpio = f.titulo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60);
       const ruta = `docs/${anio}-${limpio || "documento"}-${Date.now()}.pdf`;
       const sub = await this.sb.storage.from(this.bucket).upload(ruta, this.archivo, {contentType: "application/pdf", upsert: false});
-      if (sub.error) { this.avisar("No se pudo subir el PDF: " + sub.error.message, "err"); return; }
+      if (sub.error) { this.avisar("No se pudo subir el PDF: " + this.traducir(sub.error.message), "err"); return; }
       pdf = this.sb.storage.from(this.bucket).getPublicUrl(ruta).data.publicUrl;
     }
     const base = {titulo: f.titulo.trim(), tipo: f.tipo, ambito: f.ambito, materia: f.materia,
       programa: f.programa || null, anio, ref: f.ref, resumen: f.resumen, pdf,
+      vigencia: f.vigencia || "Vigente", vigencia_hasta: (f.vigHasta || "").trim(),
       actualizado_en: new Date().toISOString()};
     if (st.editing) {
       const previas = (st.editing.versiones || []).map(v => ({...v, v: String(v.v).replace("vigente", "anterior")}));
       const r = await this.sb.from("documentos").update({...base,
         versiones: [{v: "vigente", fecha: anio, nota: f.nota || "Actualización."}, ...previas]
       }).eq("id", st.editing.id);
-      if (r.error) { this.avisar("No se pudo guardar: " + r.error.message, "err"); return; }
+      if (r.error) { this.avisar("No se pudo guardar: " + this.traducir(r.error.message), "err"); return; }
       this.anota("Nueva versión", f.titulo.trim());
       this.avisar("Nueva versión registrada.");
     } else {
       const r = await this.sb.from("documentos").insert({...base, secciones: [], arts: 0,
         versiones: [{v: "vigente", fecha: anio, nota: f.nota || "Versión original."}]});
-      if (r.error) { this.avisar("No se pudo guardar: " + r.error.message, "err"); return; }
+      if (r.error) { this.avisar("No se pudo guardar: " + this.traducir(r.error.message), "err"); return; }
       this.anota("Carga", f.titulo.trim());
       this.avisar("Documento publicado en la plataforma.");
     }
@@ -426,16 +437,17 @@ class Component extends DCLogic {
 
   async importar() {
     try {
-      const {DOCS} = await import("./data/normativa/catalogo.js?v=1788381266480");
+      const {DOCS} = await import("./data/normativa/catalogo.js?v=1788383151207");
       const filas = DOCS.map(d => ({titulo: d.titulo, tipo: d.tipo, ambito: d.ambito, materia: d.materia || "",
         programa: d.programa || null, anio: String(d.anio || ""), ref: d.ref || "", resumen: d.resumen || "",
-        arts: d.arts || 0, secciones: d.secciones || [], versiones: d.versiones || [], pdf: d.pdf || ""}));
+        arts: d.arts || 0, secciones: d.secciones || [], versiones: d.versiones || [], pdf: d.pdf || "",
+        vigencia: d.vigencia || "Vigente", vigencia_hasta: d.vigencia_hasta || ""}));
       const r = await this.sb.from("documentos").insert(filas);
       if (r.error) throw r.error;
       this.anota("Importación", `${filas.length} documentos del catálogo inicial`);
       this.avisar(`Se importaron ${filas.length} documentos.`);
       this.cargar();
-    } catch (e) { this.avisar("No se pudo importar: " + e.message, "err"); }
+    } catch (e) { this.avisar("No se pudo importar: " + this.traducir(e.message), "err"); }
   }
 
   renderVals() {
@@ -484,9 +496,13 @@ class Component extends DCLogic {
       nDocs: st.docs.length, sinDocs: st.docs.length === 0,
       importar: () => this.importar(),
       docs: st.docs.map(d => ({...d, nv: (d.versiones || []).length, conPdf: !!d.pdf,
+        vigLabel: (d.vigencia || "Vigente") + (d.vigencia_hasta ? ` · hasta ${d.vigencia_hasta}` : ""),
+        vigBg: (this.VIGCOL[d.vigencia] || this.VIGCOL["Vigente"])[0],
+        vigFg: (this.VIGCOL[d.vigencia] || this.VIGCOL["Vigente"])[1],
         edit: () => this.setState({editing: d, archivoNombre: "",
           form: {titulo: d.titulo, tipo: d.tipo, ambito: d.ambito, anio: d.anio, materia: d.materia || "",
-                 programa: d.programa || "", ref: d.ref || "", resumen: d.resumen || "", nota: ""}}),
+                 programa: d.programa || "", ref: d.ref || "", resumen: d.resumen || "", nota: "",
+                 vigencia: d.vigencia || "Vigente", vigHasta: d.vigencia_hasta || ""}}),
         del: async () => {
           if (!confirm(`¿Eliminar «${d.titulo}»? Desaparecerá de la plataforma pública.`)) return;
           const r = await this.sb.from("documentos").delete().eq("id", d.id);
@@ -503,6 +519,8 @@ class Component extends DCLogic {
       materiasOpts: [...new Set([...st.docs.map(d => d.materia).filter(Boolean), f.materia || "Reglamentos generales"])].sort(),
       programasOpts: [{valor: "", etiqueta: "Sin programa asociado"}].concat(programas.map(p => ({valor: p, etiqueta: p}))),
       fTitulo: f.titulo, fTipo: f.tipo, fAmbito: f.ambito, fAnio: f.anio, fMateria: f.materia, fPrograma: f.programa, fRef: f.ref, fResumen: f.resumen, fNota: f.nota,
+      fVigencia: f.vigencia || "Vigente", fVigHasta: f.vigHasta || "",
+      setVigencia: this.setF("vigencia"), setVigHasta: this.setF("vigHasta"),
       setTitulo: this.setF("titulo"), setTipo: this.setF("tipo"), setAmbito: this.setF("ambito"), setAnio: this.setF("anio"),
       setMateria: this.setF("materia"), setPrograma: this.setF("programa"), setRef: this.setF("ref"), setResumen: this.setF("resumen"), setNota: this.setF("nota"),
       pdfEtiqueta: st.archivoNombre ? `PDF listo: ${st.archivoNombre}` : st.editing && st.editing.pdf ? "Reemplazar el PDF (opcional)" : "Adjuntar PDF (hacer clic para elegir)",
