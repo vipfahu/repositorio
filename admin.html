@@ -18,7 +18,7 @@
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js?v=1788391515898"></script>
+<script src="./support.js?v=1788401623919"></script>
 </head>
 <body>
 <x-dc>
@@ -33,7 +33,7 @@
     <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px">
       <div style="width:100%;max-width:420px">
         <div style="text-align:center;margin-bottom:22px">
-          <img src="assets/logo-fahu.png?v=1788391515898" alt="Facultad de Humanidades USACH" style="height:104px;width:auto;display:block;margin:0 auto 14px">
+          <img src="assets/logo-fahu.png?v=1788401623919" alt="Facultad de Humanidades USACH" style="height:104px;width:auto;display:block;margin:0 auto 14px">
           <div style="font:800 17px 'Archivo',sans-serif;color:#007E80">Panel de actualización</div>
           <div style="font:400 12.5px 'Archivo',sans-serif;color:#8A8272;margin-top:4px">Biblioteca Normativa de Postgrado · FAHU e IDEA</div>
         </div>
@@ -70,7 +70,7 @@
   <sc-if value="{{ vistaPanel }}" hint-placeholder-val="{{ false }}">
     <header style="background:#3A4450;padding:14px clamp(20px,5vw,60px);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
       <a href="index.html" title="Volver al inicio de la plataforma" style="display:flex;align-items:center;gap:14px;text-decoration:none">
-        <img src="assets/logo-fahu.png?v=1788391515898" alt="" style="height:52px;width:auto;display:block;filter:brightness(0) invert(1)">
+        <img src="assets/logo-fahu.png?v=1788401623919" alt="" style="height:52px;width:auto;display:block;filter:brightness(0) invert(1)">
         <div>
           <div style="font:800 15px 'Archivo',sans-serif;color:#fff">Panel de actualización</div>
           <div style="font:400 11.5px 'Archivo',sans-serif;color:rgba(255,255,255,.6)">Biblioteca Normativa de Postgrado</div>
@@ -234,6 +234,33 @@
         </div>
       </sc-if>
 
+      <sc-if value="{{ tabProgs }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:26px;align-items:start">
+          <section>
+            <h2 style="font:800 19px 'Archivo',sans-serif;margin:0 0 6px;color:#3A4450">Programas de postgrado <span style="font:600 12px 'IBM Plex Mono',monospace;color:#8A8272">{{ nProgs }}</span></h2>
+            <p style="font:400 13.5px/1.6 'Spectral',serif;color:#5A6470;margin:0 0 18px;max-width:620px">Esta lista alimenta el desplegable con que se asocia cada documento a un programa, y el filtro por programa de la plataforma pública.</p>
+            <div style="background:#fff;border:1px solid #E8E4DA;border-radius:14px;overflow:hidden">
+              <sc-for list="{{ progs }}" as="p" hint-placeholder-count="4">
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) 110px 90px;gap:14px;align-items:center;padding:13px 20px;border-bottom:1px solid #F0EDE4">
+                  <div style="font:700 13px 'Archivo',sans-serif;color:#3A4450;min-width:0">{{ p.nombre }}</div>
+                  <span style="font:600 11px 'IBM Plex Mono',monospace;color:#8A8272;text-align:right">{{ p.uso }}</span>
+                  <button onClick="{{ p.del }}" style="cursor:pointer;border:none;background:none;font:600 12px 'Archivo',sans-serif;color:{{ p.delFg }};text-align:right">Eliminar</button>
+                </div>
+              </sc-for>
+            </div>
+            <p style="font:italic 400 12px/1.5 'Spectral',serif;color:#8A8272;margin-top:12px">Un programa con documentos asociados no se puede eliminar: primero hay que reasignar o borrar esos documentos.</p>
+          </section>
+          <aside style="background:#fff;border:1px solid #E8E4DA;border-radius:14px;padding:22px 24px;position:sticky;top:20px">
+            <h3 style="font:800 15px 'Archivo',sans-serif;margin:0 0 4px;color:#3A4450">Agregar un programa</h3>
+            <p style="font:italic 400 12px/1.45 'Spectral',serif;color:#8A8272;margin:0 0 16px">Escribe el nombre completo, tal como debe figurar en la plataforma.</p>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <input value="{{ pNuevo }}" onChange="{{ setPNuevo }}" placeholder="Magíster en …" style="box-sizing:border-box;width:100%;padding:10px 14px;border:1.5px solid #E0DCD0;border-radius:9px;font:400 13px 'Archivo',sans-serif;background:#FAF9F5">
+              <button onClick="{{ addProg }}" style="cursor:pointer;border:none;font:700 13px 'Archivo',sans-serif;color:#fff;background:#007E80;border-radius:10px;padding:11px 16px">Agregar programa</button>
+            </div>
+          </aside>
+        </div>
+      </sc-if>
+
       <sc-if value="{{ tabAct }}" hint-placeholder-val="{{ false }}">
         <section style="max-width:760px">
           <h2 style="font:800 19px 'Archivo',sans-serif;margin:0 0 6px;color:#3A4450">Registro de actividad</h2>
@@ -299,6 +326,7 @@ class Component extends DCLogic {
     login: {correo:"", clave:"", nombre:""},
     form: null, editing: null, archivoNombre: "",
     uform: {nombre:"", correo:"", rol:"editor"},
+    programas: [], pNuevo: "",
     err: "", msg: "", aviso: "", avisoTipo: "ok", busy: false
   };
 
@@ -307,7 +335,7 @@ class Component extends DCLogic {
     try {
       const [lib, cfg] = await Promise.all([
         import("https://esm.sh/@supabase/supabase-js@2"),
-        import("./data/supabase/config.js?v=1788391515898")
+        import("./data/supabase/config.js?v=1788401623919")
       ]);
       this.bucket = cfg.BUCKET || "normativa";
       this.sb = lib.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
@@ -337,7 +365,8 @@ class Component extends DCLogic {
     const admin = this.state.perfil && this.state.perfil.rol === "administrador";
     const tareas = [
       this.sb.from("documentos").select("*").order("anio", {ascending: false}).order("titulo"),
-      this.sb.from("actividad").select("*").order("fecha", {ascending: false}).limit(50)
+      this.sb.from("actividad").select("*").order("fecha", {ascending: false}).limit(50),
+      this.sb.from("programas").select("*").order("nombre")
     ];
     if (admin) {
       tareas.push(this.sb.from("perfiles").select("*").order("nombre"));
@@ -345,9 +374,32 @@ class Component extends DCLogic {
     }
     const r = await Promise.all(tareas);
     this.setState({
-      docs: r[0].data || [], actividad: r[1].data || [],
-      perfiles: admin ? (r[2].data || []) : [], invitaciones: admin ? (r[3].data || []) : []
+      docs: r[0].data || [], actividad: r[1].data || [], programas: r[2].data || [],
+      perfiles: admin ? (r[3].data || []) : [], invitaciones: admin ? (r[4].data || []) : []
     });
+  }
+
+  async agregarPrograma() {
+    const nombre = (this.state.pNuevo || "").trim();
+    if (!nombre) { this.avisar("Escribe el nombre del programa.", "err"); return; }
+    const ya = this.state.programas.some(p => p.nombre.toLowerCase() === nombre.toLowerCase());
+    if (ya) { this.avisar("Ese programa ya está en la lista.", "err"); return; }
+    const r = await this.sb.from("programas").insert({nombre});
+    if (r.error) { this.avisar("No se pudo agregar: " + this.traducir(r.error.message), "err"); return; }
+    await this.anota("programa agregado", nombre);
+    this.setState({pNuevo: ""});
+    this.avisar("Programa agregado.", "ok");
+    this.cargar();
+  }
+
+  async eliminarPrograma(nombre, enUso) {
+    if (enUso) { this.avisar(`«${nombre}» tiene ${enUso} documento(s) asociado(s): reasígnalos antes de eliminarlo.`, "err"); return; }
+    if (!confirm(`¿Eliminar «${nombre}» de la lista de programas?`)) return;
+    const r = await this.sb.from("programas").delete().eq("nombre", nombre);
+    if (r.error) { this.avisar("No se pudo eliminar: " + this.traducir(r.error.message), "err"); return; }
+    await this.anota("programa eliminado", nombre);
+    this.avisar("Programa eliminado.", "ok");
+    this.cargar();
   }
 
   anota(accion, detalle) {
@@ -437,7 +489,7 @@ class Component extends DCLogic {
 
   async importar() {
     try {
-      const {DOCS} = await import("./data/normativa/catalogo.js?v=1788391515898");
+      const {DOCS} = await import("./data/normativa/catalogo.js?v=1788401623919");
       const filas = DOCS.map(d => ({titulo: d.titulo, tipo: d.tipo, ambito: d.ambito, materia: d.materia || "",
         programa: d.programa || null, anio: String(d.anio || ""), ref: d.ref || "", resumen: d.resumen || "",
         arts: d.arts || 0, secciones: d.secciones || [], versiones: d.versiones || [], pdf: d.pdf || "",
@@ -454,8 +506,9 @@ class Component extends DCLogic {
     const st = this.state, f = st.form || this.VACIO;
     const admin = !!st.perfil && st.perfil.rol === "administrador";
     const fecha = s => { try { return new Date(s).toLocaleString("es-CL", {day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit"}); } catch (e) { return ""; } };
-    const pestañas = [["docs","Documentos"]].concat(admin ? [["users","Usuarios"]] : []).concat([["act","Actividad"],["ayuda","Publicación"]]);
-    const programas = [...new Set(st.docs.map(d => d.programa).filter(Boolean))].sort();
+    const pestañas = [["docs","Documentos"],["progs","Programas"]].concat(admin ? [["users","Usuarios"]] : []).concat([["act","Actividad"],["ayuda","Publicación"]]);
+    const usoPrograma = p => st.docs.filter(d => d.programa === p).length;
+    const programas = [...new Set([...st.programas.map(p => p.nombre), ...st.docs.map(d => d.programa).filter(Boolean)])].sort((a,b) => a.localeCompare(b));
 
     return {
       vistaAcceso: st.fase === "login",
@@ -489,6 +542,17 @@ class Component extends DCLogic {
         line: st.tab === id ? "#EF7A00" : "transparent",
         pick: () => this.setState({tab: id})})),
       tabDocs: st.tab === "docs", tabUsers: st.tab === "users" && admin, tabAct: st.tab === "act", tabAyuda: st.tab === "ayuda",
+      tabProgs: st.tab === "progs",
+      nProgs: programas.length,
+      pNuevo: st.pNuevo,
+      setPNuevo: e => this.setState({pNuevo: e.target.value}),
+      addProg: () => this.agregarPrograma(),
+      progs: programas.map(nombre => {
+        const n = usoPrograma(nombre);
+        return {nombre, uso: n === 1 ? "1 documento" : `${n} documentos`,
+          delFg: n ? "#C9C2B2" : "#B0483A",
+          del: () => this.eliminarPrograma(nombre, n)};
+      }),
       hayAviso: !!st.aviso, aviso: st.aviso,
       avisoBg: st.avisoTipo === "err" ? "#F9EBE8" : "#E7F3EB",
       avisoFg: st.avisoTipo === "err" ? "#B0483A" : "#2F6B4F",
