@@ -18,7 +18,7 @@
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js?v=1788401623919"></script>
+<script src="./support.js?v=1788450747236"></script>
 </head>
 <body>
 <x-dc>
@@ -33,7 +33,7 @@
     <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px">
       <div style="width:100%;max-width:420px">
         <div style="text-align:center;margin-bottom:22px">
-          <img src="assets/logo-fahu.png?v=1788401623919" alt="Facultad de Humanidades USACH" style="height:104px;width:auto;display:block;margin:0 auto 14px">
+          <img src="assets/logo-fahu.png?v=1788450747236" alt="Facultad de Humanidades USACH" style="height:104px;width:auto;display:block;margin:0 auto 14px">
           <div style="font:800 17px 'Archivo',sans-serif;color:#007E80">Panel de actualización</div>
           <div style="font:400 12.5px 'Archivo',sans-serif;color:#8A8272;margin-top:4px">Biblioteca Normativa de Postgrado · FAHU e IDEA</div>
         </div>
@@ -70,7 +70,7 @@
   <sc-if value="{{ vistaPanel }}" hint-placeholder-val="{{ false }}">
     <header style="background:#3A4450;padding:14px clamp(20px,5vw,60px);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
       <a href="index.html" title="Volver al inicio de la plataforma" style="display:flex;align-items:center;gap:14px;text-decoration:none">
-        <img src="assets/logo-fahu.png?v=1788401623919" alt="" style="height:52px;width:auto;display:block;filter:brightness(0) invert(1)">
+        <img src="assets/logo-fahu.png?v=1788450747236" alt="" style="height:52px;width:auto;display:block;filter:brightness(0) invert(1)">
         <div>
           <div style="font:800 15px 'Archivo',sans-serif;color:#fff">Panel de actualización</div>
           <div style="font:400 11.5px 'Archivo',sans-serif;color:rgba(255,255,255,.6)">Biblioteca Normativa de Postgrado</div>
@@ -99,6 +99,29 @@
         <div style="display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:26px;align-items:start">
           <section>
             <h2 style="font:800 19px 'Archivo',sans-serif;margin:0 0 14px;color:#3A4450">Documentos cargados <span style="font:600 12px 'IBM Plex Mono',monospace;color:#8A8272">{{ nDocs }}</span></h2>
+            <div style="background:#fff;border:1px solid #E8E4DA;border-radius:12px;padding:14px 16px;margin-bottom:14px;display:flex;flex-direction:column;gap:10px">
+              <input value="{{ bq }}" onChange="{{ setBq }}" placeholder="Buscar por título, referencia, materia o programa…" style="box-sizing:border-box;width:100%;padding:10px 14px;border:1.5px solid #E0DCD0;border-radius:9px;font:400 13px 'Archivo',sans-serif;background:#FAF9F5">
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px">
+                <select value="{{ bTipo }}" onChange="{{ setBTipo }}" style="min-width:0;padding:8px 10px;border:1.5px solid #E0DCD0;border-radius:8px;font:600 11.5px 'Archivo',sans-serif;background:#FAF9F5;color:#3A4450">
+                  <sc-for list="{{ bTipos }}" as="o" hint-placeholder-count="5"><option>{{ o }}</option></sc-for>
+                </select>
+                <select value="{{ bAmbito }}" onChange="{{ setBAmbito }}" style="min-width:0;padding:8px 10px;border:1.5px solid #E0DCD0;border-radius:8px;font:600 11.5px 'Archivo',sans-serif;background:#FAF9F5;color:#3A4450">
+                  <sc-for list="{{ bAmbitos }}" as="o" hint-placeholder-count="4"><option>{{ o }}</option></sc-for>
+                </select>
+                <select value="{{ bPrograma }}" onChange="{{ setBPrograma }}" style="min-width:0;padding:8px 10px;border:1.5px solid #E0DCD0;border-radius:8px;font:600 11.5px 'Archivo',sans-serif;background:#FAF9F5;color:#3A4450">
+                  <sc-for list="{{ bProgramas }}" as="o" hint-placeholder-count="6"><option value="{{ o.v }}">{{ o.t }}</option></sc-for>
+                </select>
+                <select value="{{ bVigencia }}" onChange="{{ setBVigencia }}" style="min-width:0;padding:8px 10px;border:1.5px solid #E0DCD0;border-radius:8px;font:600 11.5px 'Archivo',sans-serif;background:#FAF9F5;color:#3A4450">
+                  <sc-for list="{{ bVigencias }}" as="o" hint-placeholder-count="5"><option>{{ o }}</option></sc-for>
+                </select>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+                <span style="font:400 11.5px 'Archivo',sans-serif;color:#8A8272">{{ bResumen }}</span>
+                <sc-if value="{{ bActivo }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ bLimpiar }}" style="cursor:pointer;border:none;background:none;padding:0;font:600 11.5px 'Archivo',sans-serif;color:#007E80">Ver todos</button>
+                </sc-if>
+              </div>
+            </div>
             <sc-if value="{{ sinDocs }}" hint-placeholder-val="{{ false }}">
               <div style="background:#fff;border:1px dashed #C9C3B4;border-radius:12px;padding:22px;margin-bottom:14px">
                 <div style="font:700 13.5px 'Archivo',sans-serif;color:#3A4450;margin-bottom:6px">La base de datos está vacía</div>
@@ -327,6 +350,7 @@ class Component extends DCLogic {
     form: null, editing: null, archivoNombre: "",
     uform: {nombre:"", correo:"", rol:"editor"},
     programas: [], pNuevo: "",
+    bq: "", bTipo: "Todos los tipos", bAmbito: "Todos los ámbitos", bPrograma: "", bVigencia: "Toda vigencia",
     err: "", msg: "", aviso: "", avisoTipo: "ok", busy: false
   };
 
@@ -335,7 +359,7 @@ class Component extends DCLogic {
     try {
       const [lib, cfg] = await Promise.all([
         import("https://esm.sh/@supabase/supabase-js@2"),
-        import("./data/supabase/config.js?v=1788401623919")
+        import("./data/supabase/config.js?v=1788450747236")
       ]);
       this.bucket = cfg.BUCKET || "normativa";
       this.sb = lib.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
@@ -377,6 +401,24 @@ class Component extends DCLogic {
       docs: r[0].data || [], actividad: r[1].data || [], programas: r[2].data || [],
       perfiles: admin ? (r[3].data || []) : [], invitaciones: admin ? (r[4].data || []) : []
     });
+  }
+
+  hayBusqueda() {
+    const s = this.state;
+    return !!s.bq || s.bTipo !== "Todos los tipos" || s.bAmbito !== "Todos los ámbitos" ||
+           !!s.bPrograma || s.bVigencia !== "Toda vigencia";
+  }
+
+  filtrarDocs(docs) {
+    const s = this.state;
+    const norm = t => (t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const q = norm(s.bq).trim();
+    return docs.filter(d =>
+      (s.bTipo === "Todos los tipos" || d.tipo === s.bTipo) &&
+      (s.bAmbito === "Todos los ámbitos" || d.ambito === s.bAmbito) &&
+      (!s.bPrograma || (s.bPrograma === "__sin__" ? !d.programa : d.programa === s.bPrograma)) &&
+      (s.bVigencia === "Toda vigencia" || (d.vigencia || "Vigente") === s.bVigencia) &&
+      (!q || norm([d.titulo, d.ref, d.materia, d.programa, d.resumen, d.anio].join(" ")).includes(q)));
   }
 
   async agregarPrograma() {
@@ -489,7 +531,7 @@ class Component extends DCLogic {
 
   async importar() {
     try {
-      const {DOCS} = await import("./data/normativa/catalogo.js?v=1788401623919");
+      const {DOCS} = await import("./data/normativa/catalogo.js?v=1788450747236");
       const filas = DOCS.map(d => ({titulo: d.titulo, tipo: d.tipo, ambito: d.ambito, materia: d.materia || "",
         programa: d.programa || null, anio: String(d.anio || ""), ref: d.ref || "", resumen: d.resumen || "",
         arts: d.arts || 0, secciones: d.secciones || [], versiones: d.versiones || [], pdf: d.pdf || "",
@@ -559,7 +601,23 @@ class Component extends DCLogic {
 
       nDocs: st.docs.length, sinDocs: st.docs.length === 0,
       importar: () => this.importar(),
-      docs: st.docs.map(d => ({...d, nv: (d.versiones || []).length, conPdf: !!d.pdf,
+      bq: st.bq, bTipo: st.bTipo, bAmbito: st.bAmbito, bPrograma: st.bPrograma, bVigencia: st.bVigencia,
+      setBq: e => this.setState({bq: e.target.value}),
+      setBTipo: e => this.setState({bTipo: e.target.value}),
+      setBAmbito: e => this.setState({bAmbito: e.target.value}),
+      setBPrograma: e => this.setState({bPrograma: e.target.value}),
+      setBVigencia: e => this.setState({bVigencia: e.target.value}),
+      bTipos: ["Todos los tipos", ...[...new Set(st.docs.map(d => d.tipo).filter(Boolean))].sort()],
+      bAmbitos: ["Todos los ámbitos", ...[...new Set(st.docs.map(d => d.ambito).filter(Boolean))].sort()],
+      bVigencias: ["Toda vigencia", "Vigente", "Vencida", "Derogada", "Sin definir"],
+      bProgramas: [{v: "", t: "Todos los programas"}, {v: "__sin__", t: "Sin programa asignado"},
+        ...programas.map(p => ({v: p, t: p}))],
+      bActivo: this.hayBusqueda(),
+      bLimpiar: () => this.setState({bq:"", bTipo:"Todos los tipos", bAmbito:"Todos los ámbitos", bPrograma:"", bVigencia:"Toda vigencia"}),
+      bResumen: this.hayBusqueda()
+        ? `${this.filtrarDocs(st.docs).length} de ${st.docs.length} documentos`
+        : `${st.docs.length} documento(s) en la base de datos`,
+      docs: this.filtrarDocs(st.docs).map(d => ({...d, nv: (d.versiones || []).length, conPdf: !!d.pdf,
         vigLabel: (d.vigencia || "Vigente") + (d.vigencia_hasta ? ` · hasta ${d.vigencia_hasta}` : ""),
         vigBg: (this.VIGCOL[d.vigencia] || this.VIGCOL["Vigente"])[0],
         vigFg: (this.VIGCOL[d.vigencia] || this.VIGCOL["Vigente"])[1],
