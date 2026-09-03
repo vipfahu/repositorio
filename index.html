@@ -18,7 +18,7 @@
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js?v=1788450747236"></script>
+<script src="./support.js?v=1788458250374"></script>
 </head>
 <body>
 <x-dc>
@@ -51,7 +51,7 @@ body{margin:0;background:#F6F4EF}a{color:#007E80}a:hover{color:#EF7A00}input:foc
 <div style="min-height:100vh;font-family:'Spectral',serif;color:#3A4450">
   <header style="background:#fff;border-bottom:1px solid #E8E4DA;padding:16px clamp(24px,5vw,60px);display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap">
     <div onClick="{{ inicio }}" title="Volver al inicio de la plataforma" style="cursor:pointer">
-      <img src="assets/logo-fahu.png?v=1788450747236" alt="Facultad de Humanidades · Universidad de Santiago de Chile" style="display:block;height:87px;width:auto;margin-bottom:8px">
+      <img src="assets/logo-fahu.png?v=1788458250374" alt="Facultad de Humanidades · Universidad de Santiago de Chile" style="display:block;height:87px;width:auto;margin-bottom:8px">
       <span style="font:800 16px 'Archivo',sans-serif;color:#007E80">Repositorio Normativa Postgrados FAHU e IDEA</span>
       <span style="font:400 12px 'Archivo',sans-serif;color:#8A8272;margin-left:10px">Vicedecanato de Investigación y Postgrado · FAHU USACH</span>
     </div>
@@ -232,7 +232,7 @@ class Component extends DCLogic {
   matrizFilas = [];
   async componentDidMount() {
     try {
-      const m = await import('./data/normativa/catalogo.js?v=1788450747236');
+      const m = await import('./data/normativa/catalogo.js?v=1788458250374');
       this.docs = m.DOCS; this.matrizFilas = m.MATRIZ;
       this.forceUpdate();
     } catch (e) { console.warn('No se pudo cargar el catálogo normativo', e); }
@@ -253,7 +253,7 @@ class Component extends DCLogic {
       if (!this._sb) {
         const [lib, cfg] = await Promise.all([
           import('https://esm.sh/@supabase/supabase-js@2'),
-          import('./data/supabase/config.js?v=1788450747236')
+          import('./data/supabase/config.js?v=1788458250374')
         ]);
         this._sb = lib.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
       }

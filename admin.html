@@ -18,7 +18,7 @@
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js?v=1788450747236"></script>
+<script src="./support.js?v=1788458250374"></script>
 </head>
 <body>
 <x-dc>
@@ -33,7 +33,7 @@
     <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px">
       <div style="width:100%;max-width:420px">
         <div style="text-align:center;margin-bottom:22px">
-          <img src="assets/logo-fahu.png?v=1788450747236" alt="Facultad de Humanidades USACH" style="height:104px;width:auto;display:block;margin:0 auto 14px">
+          <img src="assets/logo-fahu.png?v=1788458250374" alt="Facultad de Humanidades USACH" style="height:104px;width:auto;display:block;margin:0 auto 14px">
           <div style="font:800 17px 'Archivo',sans-serif;color:#007E80">Panel de actualización</div>
           <div style="font:400 12.5px 'Archivo',sans-serif;color:#8A8272;margin-top:4px">Biblioteca Normativa de Postgrado · FAHU e IDEA</div>
         </div>
@@ -70,7 +70,7 @@
   <sc-if value="{{ vistaPanel }}" hint-placeholder-val="{{ false }}">
     <header style="background:#3A4450;padding:14px clamp(20px,5vw,60px);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
       <a href="index.html" title="Volver al inicio de la plataforma" style="display:flex;align-items:center;gap:14px;text-decoration:none">
-        <img src="assets/logo-fahu.png?v=1788450747236" alt="" style="height:52px;width:auto;display:block;filter:brightness(0) invert(1)">
+        <img src="assets/logo-fahu.png?v=1788458250374" alt="" style="height:52px;width:auto;display:block;filter:brightness(0) invert(1)">
         <div>
           <div style="font:800 15px 'Archivo',sans-serif;color:#fff">Panel de actualización</div>
           <div style="font:400 11.5px 'Archivo',sans-serif;color:rgba(255,255,255,.6)">Biblioteca Normativa de Postgrado</div>
@@ -149,6 +149,13 @@
                 </article>
               </sc-for>
             </div>
+            <sc-if value="{{ conPaginas }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:16px;padding-top:14px;border-top:1px solid #E8E4DA">
+                <button onClick="{{ pagPrev }}" style="cursor:{{ prevCursor }};border:none;background:none;padding:0;font:600 12.5px 'Archivo',sans-serif;color:{{ prevFg }}">← Anteriores</button>
+                <span style="font:400 11.5px 'Archivo',sans-serif;color:#8A8272">{{ pagRotulo }}</span>
+                <button onClick="{{ pagNext }}" style="cursor:{{ nextCursor }};border:none;background:none;padding:0;font:600 12.5px 'Archivo',sans-serif;color:{{ nextFg }}">Siguientes →</button>
+              </div>
+            </sc-if>
           </section>
           <section style="background:#fff;border:1px solid #E8E4DA;border-radius:14px;padding:22px 24px;position:sticky;top:20px">
             <h3 style="font:800 15px 'Archivo',sans-serif;margin:0 0 4px;color:#3A4450">{{ formTitle }}</h3>
@@ -288,6 +295,13 @@
         <section style="max-width:760px">
           <h2 style="font:800 19px 'Archivo',sans-serif;margin:0 0 6px;color:#3A4450">Registro de actividad</h2>
           <p style="font:400 13.5px/1.6 'Spectral',serif;color:#5A6470;margin:0 0 18px">Últimos movimientos del panel. Cada carga, edición o cambio de permisos queda registrado con su autor y fecha.</p>
+          <sc-if value="{{ conActError }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#F9EDE9;border:1px solid #E8CFC8;border-radius:12px;padding:14px 18px;margin-bottom:16px;font:400 12.5px/1.55 'Archivo',sans-serif;color:#8A3D2E">El registro no pudo escribirse: {{ actError }}</div>
+          </sc-if>
+          <sc-if value="{{ sinActividad }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fff;border:1px solid #E8E4DA;border-radius:14px;padding:22px 24px;margin-bottom:16px;font:400 13px/1.6 'Spectral',serif;color:#8A8272">Todavía no hay movimientos registrados: el historial comienza ahora, y las acciones anteriores a esta versión del panel no quedaron guardadas. La próxima carga, edición o cambio de permisos aparecerá aquí.</div>
+          </sc-if>
+          <sc-if value="{{ conActividad }}" hint-placeholder-val="{{ true }}">
           <div style="background:#fff;border:1px solid #E8E4DA;border-radius:14px;overflow:hidden">
             <sc-for list="{{ actividad }}" as="a" hint-placeholder-count="5">
               <div style="display:grid;grid-template-columns:150px 120px minmax(0,1fr);gap:14px;align-items:baseline;padding:12px 20px;border-bottom:1px solid #F0EDE4">
@@ -300,6 +314,7 @@
               </div>
             </sc-for>
           </div>
+          </sc-if>
         </section>
       </sc-if>
 
@@ -350,6 +365,7 @@ class Component extends DCLogic {
     form: null, editing: null, archivoNombre: "",
     uform: {nombre:"", correo:"", rol:"editor"},
     programas: [], pNuevo: "",
+    actError: "", pag: 1,
     bq: "", bTipo: "Todos los tipos", bAmbito: "Todos los ámbitos", bPrograma: "", bVigencia: "Toda vigencia",
     err: "", msg: "", aviso: "", avisoTipo: "ok", busy: false
   };
@@ -359,7 +375,7 @@ class Component extends DCLogic {
     try {
       const [lib, cfg] = await Promise.all([
         import("https://esm.sh/@supabase/supabase-js@2"),
-        import("./data/supabase/config.js?v=1788450747236")
+        import("./data/supabase/config.js?v=1788458250374")
       ]);
       this.bucket = cfg.BUCKET || "normativa";
       this.sb = lib.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
@@ -444,8 +460,17 @@ class Component extends DCLogic {
     this.cargar();
   }
 
-  anota(accion, detalle) {
-    return this.sb.from("actividad").insert({correo: this.state.perfil ? this.state.perfil.correo : "", accion, detalle});
+  async anota(accion, detalle) {
+    const fila = {correo: this.state.perfil ? this.state.perfil.correo : "", accion, detalle: detalle || ""};
+    const r = await this.sb.from("actividad").insert(fila);
+    if (r.error) {
+      console.warn("No se pudo registrar la actividad:", r.error.message);
+      this.setState({actError: this.traducir(r.error.message)});
+      return r;
+    }
+    // el registro se refleja de inmediato, sin esperar una recarga completa
+    this.setState(s => ({actError: "", actividad: [{...fila, fecha: new Date().toISOString()}, ...s.actividad]}));
+    return r;
   }
   avisar(aviso, tipo) { this.setState({aviso, avisoTipo: tipo || "ok"}); setTimeout(() => this.setState({aviso: ""}), 5000); }
   setF(k) { return e => this.setState(s => ({form: {...s.form, [k]: e.target.value}})); }
@@ -515,13 +540,13 @@ class Component extends DCLogic {
         versiones: [{v: "vigente", fecha: anio, nota: f.nota || "Actualización."}, ...previas]
       }).eq("id", st.editing.id);
       if (r.error) { this.avisar("No se pudo guardar: " + this.traducir(r.error.message), "err"); return; }
-      this.anota("Nueva versión", f.titulo.trim());
+      await this.anota("Nueva versión", f.titulo.trim());
       this.avisar("Nueva versión registrada.");
     } else {
       const r = await this.sb.from("documentos").insert({...base, secciones: [], arts: 0,
         versiones: [{v: "vigente", fecha: anio, nota: f.nota || "Versión original."}]});
       if (r.error) { this.avisar("No se pudo guardar: " + this.traducir(r.error.message), "err"); return; }
-      this.anota("Carga", f.titulo.trim());
+      await this.anota("Carga", f.titulo.trim());
       this.avisar("Documento publicado en la plataforma.");
     }
     this.archivo = null;
@@ -531,14 +556,14 @@ class Component extends DCLogic {
 
   async importar() {
     try {
-      const {DOCS} = await import("./data/normativa/catalogo.js?v=1788450747236");
+      const {DOCS} = await import("./data/normativa/catalogo.js?v=1788458250374");
       const filas = DOCS.map(d => ({titulo: d.titulo, tipo: d.tipo, ambito: d.ambito, materia: d.materia || "",
         programa: d.programa || null, anio: String(d.anio || ""), ref: d.ref || "", resumen: d.resumen || "",
         arts: d.arts || 0, secciones: d.secciones || [], versiones: d.versiones || [], pdf: d.pdf || "",
         vigencia: d.vigencia || "Vigente", vigencia_hasta: d.vigencia_hasta || ""}));
       const r = await this.sb.from("documentos").insert(filas);
       if (r.error) throw r.error;
-      this.anota("Importación", `${filas.length} documentos del catálogo inicial`);
+      await this.anota("Importación", `${filas.length} documentos del catálogo inicial`);
       this.avisar(`Se importaron ${filas.length} documentos.`);
       this.cargar();
     } catch (e) { this.avisar("No se pudo importar: " + this.traducir(e.message), "err"); }
@@ -550,6 +575,13 @@ class Component extends DCLogic {
     const fecha = s => { try { return new Date(s).toLocaleString("es-CL", {day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit"}); } catch (e) { return ""; } };
     const pestañas = [["docs","Documentos"],["progs","Programas"]].concat(admin ? [["users","Usuarios"]] : []).concat([["act","Actividad"],["ayuda","Publicación"]]);
     const usoPrograma = p => st.docs.filter(d => d.programa === p).length;
+    const POR = 20;
+    const filtrados = this.filtrarDocs(st.docs);
+    const total = filtrados.length;
+    const totalPag = Math.max(1, Math.ceil(total / POR));
+    const pag = Math.min(Math.max(1, st.pag || 1), totalPag);
+    const desde = (pag - 1) * POR;
+    const visibles = filtrados.slice(desde, desde + POR);
     const programas = [...new Set([...st.programas.map(p => p.nombre), ...st.docs.map(d => d.programa).filter(Boolean)])].sort((a,b) => a.localeCompare(b));
 
     return {
@@ -602,22 +634,28 @@ class Component extends DCLogic {
       nDocs: st.docs.length, sinDocs: st.docs.length === 0,
       importar: () => this.importar(),
       bq: st.bq, bTipo: st.bTipo, bAmbito: st.bAmbito, bPrograma: st.bPrograma, bVigencia: st.bVigencia,
-      setBq: e => this.setState({bq: e.target.value}),
-      setBTipo: e => this.setState({bTipo: e.target.value}),
-      setBAmbito: e => this.setState({bAmbito: e.target.value}),
-      setBPrograma: e => this.setState({bPrograma: e.target.value}),
-      setBVigencia: e => this.setState({bVigencia: e.target.value}),
+      setBq: e => this.setState({bq: e.target.value, pag: 1}),
+      setBTipo: e => this.setState({bTipo: e.target.value, pag: 1}),
+      setBAmbito: e => this.setState({bAmbito: e.target.value, pag: 1}),
+      setBPrograma: e => this.setState({bPrograma: e.target.value, pag: 1}),
+      setBVigencia: e => this.setState({bVigencia: e.target.value, pag: 1}),
       bTipos: ["Todos los tipos", ...[...new Set(st.docs.map(d => d.tipo).filter(Boolean))].sort()],
       bAmbitos: ["Todos los ámbitos", ...[...new Set(st.docs.map(d => d.ambito).filter(Boolean))].sort()],
       bVigencias: ["Toda vigencia", "Vigente", "Vencida", "Derogada", "Sin definir"],
       bProgramas: [{v: "", t: "Todos los programas"}, {v: "__sin__", t: "Sin programa asignado"},
         ...programas.map(p => ({v: p, t: p}))],
       bActivo: this.hayBusqueda(),
-      bLimpiar: () => this.setState({bq:"", bTipo:"Todos los tipos", bAmbito:"Todos los ámbitos", bPrograma:"", bVigencia:"Toda vigencia"}),
+      bLimpiar: () => this.setState({bq:"", bTipo:"Todos los tipos", bAmbito:"Todos los ámbitos", bPrograma:"", bVigencia:"Toda vigencia", pag:1}),
       bResumen: this.hayBusqueda()
-        ? `${this.filtrarDocs(st.docs).length} de ${st.docs.length} documentos`
+        ? `${total} de ${st.docs.length} documentos`
         : `${st.docs.length} documento(s) en la base de datos`,
-      docs: this.filtrarDocs(st.docs).map(d => ({...d, nv: (d.versiones || []).length, conPdf: !!d.pdf,
+      conPaginas: totalPag > 1,
+      pagRotulo: total ? `${desde + 1}–${Math.min(desde + POR, total)} de ${total}` : "Sin documentos",
+      pagPrev: () => this.setState(s => ({pag: Math.max(1, (s.pag || 1) - 1)})),
+      pagNext: () => this.setState(s => ({pag: Math.min(totalPag, (s.pag || 1) + 1)})),
+      prevFg: pag > 1 ? "#007E80" : "#C9C2B2", prevCursor: pag > 1 ? "pointer" : "default",
+      nextFg: pag < totalPag ? "#007E80" : "#C9C2B2", nextCursor: pag < totalPag ? "pointer" : "default",
+      docs: visibles.map(d => ({...d, nv: (d.versiones || []).length, conPdf: !!d.pdf,
         vigLabel: (d.vigencia || "Vigente") + (d.vigencia_hasta ? ` · hasta ${d.vigencia_hasta}` : ""),
         vigBg: (this.VIGCOL[d.vigencia] || this.VIGCOL["Vigente"])[0],
         vigFg: (this.VIGCOL[d.vigencia] || this.VIGCOL["Vigente"])[1],
@@ -629,7 +667,7 @@ class Component extends DCLogic {
           if (!confirm(`¿Eliminar «${d.titulo}»? Desaparecerá de la plataforma pública.`)) return;
           const r = await this.sb.from("documentos").delete().eq("id", d.id);
           if (r.error) { this.avisar("No se pudo eliminar: " + r.error.message, "err"); return; }
-          this.anota("Eliminación", d.titulo);
+          await this.anota("Eliminación", d.titulo);
           this.avisar("Documento eliminado.");
           this.cargar();
         }})),
@@ -661,14 +699,14 @@ class Component extends DCLogic {
           const rol = e.target.value;
           const r = await this.sb.from("perfiles").update({rol}).eq("id", u.id);
           if (r.error) { this.avisar("No se pudo cambiar el rol: " + r.error.message, "err"); return; }
-          this.anota("Cambio de rol", `${u.correo} → ${rol}`);
+          await this.anota("Cambio de rol", `${u.correo} → ${rol}`);
           this.cargar();
         },
         toggle: async () => {
           if (st.perfil && u.id === st.perfil.id) { this.avisar("No puedes suspender tu propia cuenta.", "err"); return; }
           const r = await this.sb.from("perfiles").update({activo: !u.activo}).eq("id", u.id);
           if (r.error) { this.avisar("No se pudo cambiar el estado: " + r.error.message, "err"); return; }
-          this.anota(u.activo ? "Suspensión" : "Reactivación", u.correo);
+          await this.anota(u.activo ? "Suspensión" : "Reactivación", u.correo);
           this.cargar();
         },
         del: async () => {
@@ -676,7 +714,7 @@ class Component extends DCLogic {
           if (!confirm(`¿Quitar el acceso de ${u.correo}?`)) return;
           const r = await this.sb.from("perfiles").delete().eq("id", u.id);
           if (r.error) { this.avisar("No se pudo quitar: " + r.error.message, "err"); return; }
-          this.anota("Retiro de acceso", u.correo);
+          await this.anota("Retiro de acceso", u.correo);
           this.cargar();
         }})),
 
@@ -686,7 +724,7 @@ class Component extends DCLogic {
         del: async () => {
           const r = await this.sb.from("invitaciones").delete().eq("correo", i.correo);
           if (r.error) { this.avisar("No se pudo anular: " + r.error.message, "err"); return; }
-          this.anota("Invitación anulada", i.correo);
+          await this.anota("Invitación anulada", i.correo);
           this.cargar();
         }})),
       uNombre: st.uform.nombre, uCorreo: st.uform.correo, uRol: st.uform.rol,
@@ -696,13 +734,17 @@ class Component extends DCLogic {
         if (!u.correo.trim()) { this.avisar("Escribe el correo de la persona.", "err"); return; }
         const r = await this.sb.from("invitaciones").upsert({correo: u.correo.trim().toLowerCase(), nombre: u.nombre.trim(), rol: u.rol});
         if (r.error) { this.avisar("No se pudo autorizar: " + r.error.message, "err"); return; }
-        this.anota("Invitación", `${u.correo.trim()} como ${u.rol}`);
+        await this.anota("Invitación", `${u.correo.trim()} como ${u.rol}`);
         this.avisar("Correo autorizado. La persona ya puede crear su contraseña.");
         this.setState({uform: {nombre: "", correo: "", rol: "editor"}});
         this.cargar();
       },
 
       actividad: st.actividad.map(a => ({...a, fecha: fecha(a.fecha)})),
+      sinActividad: st.actividad.length === 0,
+      conActividad: st.actividad.length > 0,
+      actError: st.actError || "",
+      conActError: !!st.actError,
       download: () => {
         const blob = new Blob([JSON.stringify({actualizado: new Date().toISOString(), documentos: st.docs}, null, 2)], {type: "application/json"});
         const a = document.createElement("a");
